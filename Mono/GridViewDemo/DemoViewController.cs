@@ -223,17 +223,17 @@ namespace GridViewDemo
 			}
 		}
 		
-		public GMGridViewCell gridViewCellForItemAtIndex (GMGridView gridView, int index)
+		public GridViewCell gridViewCellForItemAtIndex (GMGridView gridView, int index)
 		{
 			//NSLog(@"Creating view indx %d", index);
 			
 			SizeF size = gridViewSizeForItemsInInterfaceOrientation(gridView,UIApplication.SharedApplication.StatusBarOrientation);
 			
-			GMGridViewCell cell = gridView.DequeueReusableCell();				
+			GridViewCell cell = gridView.DequeueReusableCell();				
 			
 			if (cell==null) 
 			{
-				cell = new GMGridViewCell();
+				cell = new GridViewCell();
 				cell.setDeleteButtonIcon(null);
 				cell.setDeleteButtonOffset(new PointF(-15, -15));
 				
@@ -313,7 +313,7 @@ namespace GridViewDemo
 		
 		#region GMGridViewTransformationDelegate implementation
 		
-		public SizeF gridViewSizeInFullSizeForCell (GMGridView gridView, GMGridViewCell cell, int index, UIInterfaceOrientation orientation)
+		public SizeF gridViewSizeInFullSizeForCell (GMGridView gridView, GridViewCell cell, int index, UIInterfaceOrientation orientation)
 		{
 			if (IsIphone) 
 			{
@@ -339,7 +339,7 @@ namespace GridViewDemo
 			}
 		}
 		
-		public UIView gridViewFullSizeViewForCell (GMGridView gridView, GMGridViewCell cell, int index)
+		public UIView gridViewFullSizeViewForCell (GMGridView gridView, GridViewCell cell, int index)
 		{
 			UIView fullView = new UIView();
 			fullView.BackgroundColor = UIColor.Yellow;
@@ -369,17 +369,17 @@ namespace GridViewDemo
 			return fullView;
 		}
 		
-		public void gridViewDidStartTransformingCell (GMGridView gridView, GMGridViewCell cell)
+		public void gridViewDidStartTransformingCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
 		
-		public void gridViewDidEnterFullSizeForCell (GMGridView gridView, GMGridViewCell cell)
+		public void gridViewDidEnterFullSizeForCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
 		
-		public void gridViewDidEndTransformingCell (GMGridView gridView, GMGridViewCell cell)
+		public void gridViewDidEndTransformingCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
@@ -400,17 +400,17 @@ namespace GridViewDemo
 			
 		}
 		
-		public void gridViewDidStartMovingCell (GMGridView gridView, GMGridViewCell cell)
+		public void gridViewDidStartMovingCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
 		
-		public void gridViewDidEndMovingCell (GMGridView gridView, GMGridViewCell cell)
+		public void gridViewDidEndMovingCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
 		
-		public bool gridViewShouldAllowShakingBehaviorWhenMovingCell (GMGridView gridView, GMGridViewCell view, int index)
+		public bool gridViewShouldAllowShakingBehaviorWhenMovingCell (GMGridView gridView, GridViewCell view, int index)
 		{
 			return true;
 		}

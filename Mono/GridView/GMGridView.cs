@@ -39,7 +39,7 @@ namespace GridView
 		//@required
 		int numberOfItemsInGMGridView(GMGridView gridView);
 		SizeF gridViewSizeForItemsInInterfaceOrientation(GMGridView gridView,UIInterfaceOrientation orientation);
-		GMGridViewCell gridViewCellForItemAtIndex(GMGridView gridView,int index);
+		GridViewCell gridViewCellForItemAtIndex(GMGridView gridView,int index);
 		//@optional
 		bool gridViewCanDeleteItemAtIndex(GMGridView gridView,int index); // Allow a cell to be deletable. If not implemented, YES is assumed.
 	}
@@ -75,10 +75,10 @@ namespace GridView
 		
 		//@optional
 		// Sorting started/ended - indexes are not specified on purpose (not the right place to update data structure)
-		void gridViewDidStartMovingCell(GMGridView gridView,GMGridViewCell cell);
-		void gridViewDidEndMovingCell(GMGridView gridView,GMGridViewCell cell);
+		void gridViewDidStartMovingCell(GMGridView gridView,GridViewCell cell);
+		void gridViewDidEndMovingCell(GMGridView gridView,GridViewCell cell);
 		// Enable/Disable the shaking behavior of an item being moved
-		bool gridViewShouldAllowShakingBehaviorWhenMovingCell(GMGridView gridView,GMGridViewCell view,int index);
+		bool gridViewShouldAllowShakingBehaviorWhenMovingCell(GMGridView gridView,GridViewCell view,int index);
 	}
 	
 	#endregion
@@ -89,14 +89,14 @@ namespace GridView
 	{
 		//@required
 		// Fullsize
-		SizeF gridViewSizeInFullSizeForCell(GMGridView gridView,GMGridViewCell cell,int index,UIInterfaceOrientation orientation);
-		UIView gridViewFullSizeViewForCell(GMGridView gridView,GMGridViewCell cell,int index);
+		SizeF gridViewSizeInFullSizeForCell(GMGridView gridView,GridViewCell cell,int index,UIInterfaceOrientation orientation);
+		UIView gridViewFullSizeViewForCell(GMGridView gridView,GridViewCell cell,int index);
 
 		// Transformation (pinch, drag, rotate) of the item
 		//@optional
-		void gridViewDidStartTransformingCell(GMGridView gridView,GMGridViewCell cell);
-		void gridViewDidEnterFullSizeForCell(GMGridView gridView,GMGridViewCell cell);
-		void gridViewDidEndTransformingCell(GMGridView gridView,GMGridViewCell cell);
+		void gridViewDidStartTransformingCell(GMGridView gridView,GridViewCell cell);
+		void gridViewDidEnterFullSizeForCell(GMGridView gridView,GridViewCell cell);
+		void gridViewDidEndTransformingCell(GMGridView gridView,GridViewCell cell);
 	}
 	
 	#endregion
@@ -143,14 +143,14 @@ namespace GridView
 		PointF maxPossibleContentOffset;
 		//HashSet<GMGridViewCell> reusableCells;
 		NSMutableSet reusableCells;
-		GMGridViewCell transformingItem;
+		GridViewCell transformingItem;
 		bool inFullSizeMode;
 		bool inTransformingState;
 		bool itemsSubviewsCacheIsValid;
 		int firstPositionLoaded;
 		int lastPositionLoaded;
 		int numberTotalItems;
-		GMGridViewCell sortMovingItem;
+		GridViewCell sortMovingItem;
 
 		GMGridViewDataSource dataSource;  					// Required
 		GMGridViewActionDelegate actionDelegate;            // Optional - to get taps callback & deleting item
@@ -315,7 +315,7 @@ namespace GridView
 				{
 					itemSize = newItemSize;
 
-					ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell cell,out bool stop)
+					ItemSubviews.EnumerateGridCells(delegate(GridViewCell cell,out bool stop)
 					{
 						stop=false;
 						if (cell != transformingItem) 
@@ -539,7 +539,7 @@ namespace GridView
 		{
 			if (actionDelegate!=null && !IsInTransformingState && ((editing && !shouldEdit) || (!editing && shouldEdit)))
 			{
-				ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell cell,out bool stop)
+				ItemSubviews.EnumerateGridCells(delegate(GridViewCell cell,out bool stop)
 				{
 					stop=false;
 					int index = PositionForItemSubview(cell);
@@ -832,7 +832,7 @@ namespace GridView
 		{
 			int position = layoutStrategy.ItemPositionFromLocation(point);
 			
-			GMGridViewCell item = CellForItemAtIndex(position);
+			GridViewCell item = CellForItemAtIndex(position);
 			BringSubviewToFront(item);
 			sortMovingItem = item;
 
@@ -903,7 +903,7 @@ namespace GridView
 			{
 				bool positionTaken = false;
 				
-				ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell v,out bool stop)
+				ItemSubviews.EnumerateGridCells(delegate(GridViewCell v,out bool stop)
 				{
 					stop = false;
 					if (v != sortMovingItem && v.Tag == tag) 
@@ -921,7 +921,7 @@ namespace GridView
 						{
 							if (position > sortFuturePosition) 
 							{
-								ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell v,out bool stop)
+								ItemSubviews.EnumerateGridCells(delegate(GridViewCell v,out bool stop)
 								{
 									stop=false;
 									if ((v.Tag == tag || (v.Tag < tag && v.Tag >= sortFuturePosition + kTagOffset)) && v != sortMovingItem ) 
@@ -933,7 +933,7 @@ namespace GridView
 							}
 							else
 							{
-								ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell v,out bool stop)
+								ItemSubviews.EnumerateGridCells(delegate(GridViewCell v,out bool stop)
 								{
 									stop=false;
 									if ((v.Tag == tag || (v.Tag > tag && v.Tag <= sortFuturePosition + kTagOffset)) && v != sortMovingItem) 
@@ -1027,9 +1027,9 @@ namespace GridView
 			itemsSubviewsCacheIsValid = false;
 		}
 
-		private GMGridViewCell NewItemSubViewForPosition(int position)
+		private GridViewCell NewItemSubViewForPosition(int position)
 		{
-			GMGridViewCell cell = dataSource.gridViewCellForItemAtIndex(this,position);				
+			GridViewCell cell = dataSource.gridViewCellForItemAtIndex(this,position);				
 			PointF origin = layoutStrategy.OriginForItemAtPosition(position);
 			RectangleF frame = new RectangleF(origin.X, origin.Y, itemSize.Width, itemSize.Height);
 			
@@ -1045,7 +1045,7 @@ namespace GridView
 			cell.setEditing(canEdit,animated:false);
 			
 			GMGridView weakSelf = this;
-			cell.DeleteBlock = delegate(GMGridViewCell aCell)
+			cell.DeleteBlock = delegate(GridViewCell aCell)
 			{
 				int index = weakSelf.PositionForItemSubview(aCell);
 				if (index != GMGV_INVALID_POSITION) 
@@ -1124,7 +1124,7 @@ namespace GridView
 
 						foreach (UIView  v in Subviews)
 						{
-							if (v is GMGridViewCell)
+							if (v is GridViewCell)
 							{
 								itemSubViews.Add (v);
 							}
@@ -1143,11 +1143,11 @@ namespace GridView
 			}
 		}
 
-		private GMGridViewCell CellForItemAtIndex(int position)
+		private GridViewCell CellForItemAtIndex(int position)
 		{
-			GMGridViewCell view = null;
+			GridViewCell view = null;
 
-			ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell v,out bool stop)
+			ItemSubviews.EnumerateGridCells(delegate(GridViewCell v,out bool stop)
 			{
 				stop=false;
 				if (v.Tag == position + kTagOffset) 
@@ -1160,7 +1160,7 @@ namespace GridView
 			return view;
 		}
 
-		private int PositionForItemSubview(GMGridViewCell view)
+		private int PositionForItemSubview(GridViewCell view)
 		{
 			return view.Tag >= kTagOffset ? view.Tag - kTagOffset : GMGV_INVALID_POSITION;
 		}
@@ -1206,7 +1206,7 @@ namespace GridView
 
 			RelayoutBlock layoutBlock = delegate 
 			{
-				ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell view,out bool stop)
+				ItemSubviews.EnumerateGridCells(delegate(GridViewCell view,out bool stop)
 				{
 					stop=false;
 					if (view != sortMovingItem && view != transformingItem) 
@@ -1524,7 +1524,7 @@ namespace GridView
 					lastRotation = 0;
 					lastScale = 1.0f;
 					
-					GMGridViewCell transformingView = transformingItem;
+					GridViewCell transformingView = transformingItem;
 					transformingItem = null;
 					
 					int position = PositionForItemSubview(transformingView);						
@@ -1602,7 +1602,7 @@ namespace GridView
 					if (CellForItemAtIndex(positionToLoad)==null) 
 					{
 						//Console.WriteLine ("Added grid cell at pos: " + positionToLoad.ToString());
-						GMGridViewCell cell = NewItemSubViewForPosition(positionToLoad);							
+						GridViewCell cell = NewItemSubViewForPosition(positionToLoad);							
 						AddSubview(cell);					
 					}
 				}
@@ -1615,7 +1615,7 @@ namespace GridView
 			//int cleanupCounter=0;
 
 			NSRange rangeOfPositions = layoutStrategy.RangeOfPositionsInBoundsFromOffset(ContentOffset);
-			GMGridViewCell cell;
+			GridViewCell cell;
 			
 			if ((int)rangeOfPositions.Location > firstPositionLoaded) 
 			{
@@ -1654,7 +1654,7 @@ namespace GridView
 			}
 		}
 
-		private void QueueReusableCell(GMGridViewCell cell)
+		private void QueueReusableCell(GridViewCell cell)
 		{
 			if (cell!=null) 
 			{
@@ -1665,9 +1665,9 @@ namespace GridView
 			}
 		}
 
-		public GMGridViewCell DequeueReusableCell()
+		public GridViewCell DequeueReusableCell()
 		{
-			GMGridViewCell cell = (GMGridViewCell)reusableCells.AnyObject;
+			GridViewCell cell = (GridViewCell)reusableCells.AnyObject;
 			
 			if (cell!=null) 
 			{
@@ -1677,11 +1677,11 @@ namespace GridView
 			return cell;
 		}
 		
-		public GMGridViewCell DequeueReusableCellWithIdentifier(String identifier)
+		public GridViewCell DequeueReusableCellWithIdentifier(String identifier)
 		{
-			GMGridViewCell cell = null;
+			GridViewCell cell = null;
 
-			foreach (GMGridViewCell reusableCell in reusableCells.ToArray<GMGridViewCell>())
+			foreach (GridViewCell reusableCell in reusableCells.ToArray<GridViewCell>())
 			{
 				if (identifier.Equals(reusableCell.reuseIdentifier))
 				{
@@ -1709,13 +1709,13 @@ namespace GridView
 		{
 			PointF previousContentOffset = ContentOffset;
 
-			ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell obj,out bool stop)
+			ItemSubviews.EnumerateGridCells(delegate(GridViewCell obj,out bool stop)
 			{
 				stop=false;
-				if (obj is GMGridViewCell)				    
+				if (obj is GridViewCell)				    
 				{
 					obj.RemoveFromSuperview();
-					QueueReusableCell((GMGridViewCell)obj);
+					QueueReusableCell((GridViewCell)obj);
 				}
 			});
 			
@@ -1752,7 +1752,7 @@ namespace GridView
 			
 			UIView currentView = CellForItemAtIndex(index);
 			
-			GMGridViewCell cell = NewItemSubViewForPosition(index);
+			GridViewCell cell = NewItemSubViewForPosition(index);
 			PointF origin = layoutStrategy.OriginForItemAtPosition(index);
 			cell.Frame = new RectangleF(origin.X, origin.Y, itemSize.Width, itemSize.Height);
 			cell.Alpha = 0;
@@ -1833,7 +1833,7 @@ namespace GridView
 		{
 			Debug.Assert((index >= 0 && index <= numberTotalItems), "Invalid index specified");
 			
-			GMGridViewCell cell = null;
+			GridViewCell cell = null;
 			
 			if (index >= firstPositionLoaded && index <= lastPositionLoaded) 
 			{        
@@ -1890,11 +1890,11 @@ namespace GridView
 		{
 			Debug.Assert((index >= 0 && index < numberTotalItems), "Invalid index specified");
 			
-			GMGridViewCell cell = CellForItemAtIndex(index);
+			GridViewCell cell = CellForItemAtIndex(index);
 			
 			for (int i = index + 1; i < numberTotalItems; i++)
 			{
-				GMGridViewCell oldView = CellForItemAtIndex(i);
+				GridViewCell oldView = CellForItemAtIndex(i);
 				oldView.Tag = oldView.Tag - 1;
 			}
 			
@@ -1940,8 +1940,8 @@ namespace GridView
 			Debug.Assert((index1 >= 0 && index1 < numberTotalItems), "Invalid index1 specified");
 			Debug.Assert((index2 >= 0 && index2 < numberTotalItems), "Invalid index2 specified");
 			
-			GMGridViewCell view1 = CellForItemAtIndex(index1);
-			GMGridViewCell view2 = CellForItemAtIndex(index2);
+			GridViewCell view1 = CellForItemAtIndex(index1);
+			GridViewCell view2 = CellForItemAtIndex(index2);
 			
 			view1.Tag = index2 + kTagOffset;
 			view2.Tag = index1 + kTagOffset;

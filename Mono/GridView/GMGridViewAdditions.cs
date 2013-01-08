@@ -48,11 +48,11 @@ namespace GridView
 			}
 		}
 
-		public delegate void EnumerateGridCellBlock(GMGridViewCell cell,out bool stop);
+		public delegate void EnumerateGridCellBlock(GridViewCell cell,out bool stop);
 		public static void EnumerateGridCells(this NSArray array,EnumerateGridCellBlock block)
 		{
-			GMGridViewCell[] list = NSArray.FromArray<GMGridViewCell>(array);
-			foreach (GMGridViewCell cell in list)
+			GridViewCell[] list = NSArray.FromArray<GridViewCell>(array);
+			foreach (GridViewCell cell in list)
 			{
 				bool stop = false;
 				block(cell,out stop);
