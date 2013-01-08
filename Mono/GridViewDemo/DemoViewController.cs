@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace GridViewDemo
 {
-	public class DemoViewController : UIViewController,GMGridViewDataSource,GMGridViewSortingDelegate,GMGridViewTransformationDelegate,GMGridViewActionDelegate
+	public class DemoViewController : UIViewController,GridViewDataSource,GridViewSortingDelegate,GridViewTransformationDelegate,GridViewActionDelegate
 	{
 		public const int NUMBER_ITEMS_ON_LOAD=250;
 		public const int NUMBER_ITEMS_ON_LOAD2=30;
@@ -126,7 +126,7 @@ namespace GridViewDemo
 			gmGridView = aGridView;
 			View.AddSubview(gmGridView);
 			
-			gmGridView.Style = GMGridViewStyle.Swap;
+			gmGridView.Style = GridViewStyle.Swap;
 			gmGridView.ItemSpacing = spacing;
 			gmGridView.MinEdgeInsets = new UIEdgeInsets(spacing, spacing, spacing, spacing);
 			gmGridView.CenterGrid = true;
@@ -192,12 +192,12 @@ namespace GridViewDemo
 
 		#region GMGridViewDataSource implementation
 		
-		public int numberOfItemsInGMGridView (GMGridView gridView)
+		public int NumberOfItemsInGridView (GMGridView gridView)
 		{
 			return (int)currentData.Count;
 		}
 		
-		public SizeF gridViewSizeForItemsInInterfaceOrientation (GMGridView gridView, UIInterfaceOrientation orientation)
+		public SizeF GridViewSizeForItemsInInterfaceOrientation (GMGridView gridView, UIInterfaceOrientation orientation)
 		{
 			if (IsIphone)
 			{
@@ -223,11 +223,11 @@ namespace GridViewDemo
 			}
 		}
 		
-		public GridViewCell gridViewCellForItemAtIndex (GMGridView gridView, int index)
+		public GridViewCell GridViewCellForItemAtIndex (GMGridView gridView, int index)
 		{
 			//NSLog(@"Creating view indx %d", index);
 			
-			SizeF size = gridViewSizeForItemsInInterfaceOrientation(gridView,UIApplication.SharedApplication.StatusBarOrientation);
+			SizeF size = GridViewSizeForItemsInInterfaceOrientation(gridView,UIApplication.SharedApplication.StatusBarOrientation);
 			
 			GridViewCell cell = gridView.DequeueReusableCell();				
 			
@@ -266,7 +266,7 @@ namespace GridViewDemo
 			return cell;
 		}
 		
-		public bool gridViewCanDeleteItemAtIndex (GMGridView gridView, int index)
+		public bool GridViewCanDeleteItemAtIndex (GMGridView gridView, int index)
 		{
 			return true;
 		}
@@ -275,17 +275,17 @@ namespace GridViewDemo
 
 		#region GMGridViewActionDelegate implementation
 		
-		public void gridViewDidTapOnItemAtIndex (GMGridView gridView, int position)
+		public void GridViewDidTapOnItemAtIndex (GMGridView gridView, int position)
 		{
 			System.Console.WriteLine("Did tap at index {0}", position);
 		}
 		
-		public void gridViewDidTapOnEmptySpace (GMGridView gridView)
+		public void GridViewDidTapOnEmptySpace (GMGridView gridView)
 		{
 			System.Console.WriteLine("Tap on empty space");
 		}
 		
-		public void gridViewProcessDeleteActionForItemAtIndex (GMGridView gridView, int index)
+		public void GridViewProcessDeleteActionForItemAtIndex (GMGridView gridView, int index)
 		{
 			//UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Confirm" message:@"Are you sure you want to delete this item?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
 			
@@ -304,7 +304,7 @@ namespace GridViewDemo
 			}
 		}*/
 
-		public void gridViewChangeEdit (GMGridView gridView, bool edit)
+		public void GridViewChangeEdit (GMGridView gridView, bool edit)
 		{
 			
 		}
@@ -313,7 +313,7 @@ namespace GridViewDemo
 		
 		#region GMGridViewTransformationDelegate implementation
 		
-		public SizeF gridViewSizeInFullSizeForCell (GMGridView gridView, GridViewCell cell, int index, UIInterfaceOrientation orientation)
+		public SizeF GridViewSizeInFullSizeForCell (GMGridView gridView, GridViewCell cell, int index, UIInterfaceOrientation orientation)
 		{
 			if (IsIphone) 
 			{
@@ -339,14 +339,14 @@ namespace GridViewDemo
 			}
 		}
 		
-		public UIView gridViewFullSizeViewForCell (GMGridView gridView, GridViewCell cell, int index)
+		public UIView GridViewFullSizeViewForCell (GMGridView gridView, GridViewCell cell, int index)
 		{
 			UIView fullView = new UIView();
 			fullView.BackgroundColor = UIColor.Yellow;
 			fullView.Layer.MasksToBounds = false;
 			fullView.Layer.CornerRadius = 8.0f;
 			
-			SizeF size = gridViewSizeInFullSizeForCell(gridView,cell,index,UIApplication.SharedApplication.StatusBarOrientation);
+			SizeF size = GridViewSizeInFullSizeForCell(gridView,cell,index,UIApplication.SharedApplication.StatusBarOrientation);
 			fullView.Bounds = new RectangleF(0, 0, size.Width, size.Height);
 			
 			UILabel label = new UILabel(fullView.Bounds);				
@@ -369,17 +369,17 @@ namespace GridViewDemo
 			return fullView;
 		}
 		
-		public void gridViewDidStartTransformingCell (GMGridView gridView, GridViewCell cell)
+		public void GridViewDidStartTransformingCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
 		
-		public void gridViewDidEnterFullSizeForCell (GMGridView gridView, GridViewCell cell)
+		public void GridViewDidEnterFullSizeForCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
 		
-		public void gridViewDidEndTransformingCell (GMGridView gridView, GridViewCell cell)
+		public void GridViewDidEndTransformingCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
@@ -390,27 +390,27 @@ namespace GridViewDemo
 		
 		#region GMGridViewSortingDelegate implementation
 		
-		public void gridViewMoveItemAtIndex (GMGridView gridView, int oldIndex, int newIndex)
+		public void GridViewMoveItemAtIndex (GMGridView gridView, int oldIndex, int newIndex)
 		{
 			
 		}
 		
-		public void gridViewExchangeItemAtIndex (GMGridView gridView, int index1, int index2)
+		public void GridViewExchangeItemAtIndex (GMGridView gridView, int index1, int index2)
 		{
 			
 		}
 		
-		public void gridViewDidStartMovingCell (GMGridView gridView, GridViewCell cell)
+		public void GridViewDidStartMovingCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
 		
-		public void gridViewDidEndMovingCell (GMGridView gridView, GridViewCell cell)
+		public void GridViewDidEndMovingCell (GMGridView gridView, GridViewCell cell)
 		{
 			
 		}
 		
-		public bool gridViewShouldAllowShakingBehaviorWhenMovingCell (GMGridView gridView, GridViewCell view, int index)
+		public bool GridViewShouldAllowShakingBehaviorWhenMovingCell (GMGridView gridView, GridViewCell view, int index)
 		{
 			return true;
 		}
@@ -440,7 +440,7 @@ namespace GridViewDemo
 
 			currentData.Add(newItem);
 
-			gmGridView.InsertObjectAtIndex(currentData.Count-1,GMGridViewItemAnimation.Fade | GMGridViewItemAnimation.Scroll);
+			gmGridView.InsertObjectAtIndex(currentData.Count-1,GridViewItemAnimation.Fade | GridViewItemAnimation.Scroll);
 		}
 
 		[Export("removeItem")]
@@ -451,7 +451,7 @@ namespace GridViewDemo
 			{
 				int index = currentData.Count - 1;
 
-				gmGridView.RemoveObjectAtIndex(index,GMGridViewItemAnimation.Fade | GMGridViewItemAnimation.Scroll);
+				gmGridView.RemoveObjectAtIndex(index,GridViewItemAnimation.Fade | GridViewItemAnimation.Scroll);
 
 				currentData.RemoveAt(index);
 			}
@@ -468,7 +468,7 @@ namespace GridViewDemo
 				String newMessage = String.Format ("{0}", RandomNumber());
 
 				currentData.ReplaceObjectAtIndex(index,newMessage);
-				gmGridView.ReloadObjectAtIndex(index,GMGridViewItemAnimation.Fade | GMGridViewItemAnimation.Scroll);
+				gmGridView.ReloadObjectAtIndex(index,GridViewItemAnimation.Fade | GridViewItemAnimation.Scroll);
 
 			}
 		}
