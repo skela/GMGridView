@@ -333,11 +333,11 @@ namespace Grid
 					int position = transformingItem.Tag - kTagOffset;
 					SizeF fullSize = transformDelegate.GridViewSizeInFullSizeForCell(this,transformingItem,position,UIApplication.SharedApplication.StatusBarOrientation);						
 
-					if (!fullSize.Equals(transformingItem.fullSize)) 
+					if (!fullSize.Equals(transformingItem.FullSize)) 
 					{
-						PointF center = transformingItem.fullSizeView.Center;
-						transformingItem.fullSize = fullSize;
-						transformingItem.fullSizeView.Center = center;
+						PointF center = transformingItem.FullSizeView.Center;
+						transformingItem.FullSize = fullSize;
+						transformingItem.FullSizeView.Center = center;
 					}
 				}
 				
@@ -1439,7 +1439,7 @@ namespace Grid
 			{        
 				inTransformingState = false;
 				
-				PointF center = transformingItem.fullSizeView.Center;
+				PointF center = transformingItem.FullSizeView.Center;
 				
 				transformingItem.switchToFullSizeMode(false);					
 				CGAffineTransform newTransform = CGAffineTransform.MakeScale(2.5f, 2.5f);
@@ -1461,8 +1461,8 @@ namespace Grid
 				mainSuperView.AddSubview(transformingItem);
 				mainSuperView.BringSubviewToFront(transformingItem);
 								
-				transformingItem.fullSize = transformDelegate.GridViewSizeInFullSizeForCell(this,transformingItem,positionTouch,UIApplication.SharedApplication.StatusBarOrientation);
-				transformingItem.fullSizeView = transformDelegate.GridViewFullSizeViewForCell(this,transformingItem,positionTouch);
+				transformingItem.FullSize = transformDelegate.GridViewSizeInFullSizeForCell(this,transformingItem,positionTouch,UIApplication.SharedApplication.StatusBarOrientation);
+				transformingItem.FullSizeView = transformDelegate.GridViewFullSizeViewForCell(this,transformingItem,positionTouch);
 
 				transformDelegate.GridViewDidStartTransformingCell(this,transformingItem);
 			}
@@ -1495,12 +1495,12 @@ namespace Grid
 
 					transformingItem.BackgroundColor = UIColor.DarkGray.ColorWithAlpha(0.9f);
 
-					transformingItem.fullSizeView.Transform =  CGAffineTransform.MakeRotation(rotationValue);
+					transformingItem.FullSizeView.Transform =  CGAffineTransform.MakeRotation(rotationValue);
 
 					UIView.Animate(kDefaultAnimationDuration,0,kDefaultAnimationOptions,
 					delegate
 					{
-						transformingItem.fullSizeView.Transform = CGAffineTransform.MakeIdentity();
+						transformingItem.FullSizeView.Transform = CGAffineTransform.MakeIdentity();
 					},
 					delegate
 					{
@@ -1513,9 +1513,9 @@ namespace Grid
 					transformDelegate.GridViewDidEnterFullSizeForCell(this,transformingItem);
 
 					// Transfer the gestures on the fullscreen to make is they are accessible (depends on self.mainSuperView)
-					transformingItem.fullSizeView.AddGestureRecognizer(pinchGesture);
-					transformingItem.fullSizeView.AddGestureRecognizer(rotationGesture);
-					transformingItem.fullSizeView.AddGestureRecognizer(panGesture);
+					transformingItem.FullSizeView.AddGestureRecognizer(pinchGesture);
+					transformingItem.FullSizeView.AddGestureRecognizer(rotationGesture);
+					transformingItem.FullSizeView.AddGestureRecognizer(panGesture);
 				}
 				else if (!inTransformingState)
 				{
@@ -1548,7 +1548,7 @@ namespace Grid
 						transformingView.ContentView.Frame = transformingView.Bounds;
 						AddSubview(transformingView);
 												
-						transformingView.fullSizeView = null;
+						transformingView.FullSizeView = null;
 						inFullSizeMode = false;
 
 						transformDelegate.GridViewDidEndTransformingCell(this,transformingView);

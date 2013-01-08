@@ -24,9 +24,6 @@ namespace Grid
 			}
 		}
 
-		public UIView fullSizeView;
-		public SizeF fullSize;
-
 		bool inShakingMode;
 		public bool IsInShakingMode
 		{
@@ -176,44 +173,74 @@ namespace Grid
 			}
 		}
 
-		public void setFullSizeView(UIView newFullSizeView)
+		private UIView fullSizeView;
+
+		public UIView FullSizeView
 		{
-			if (IsInFullSizeMode) 
+			set
 			{
-				if (fullSizeView!=null)
+				if (IsInFullSizeMode) 
 				{
-					newFullSizeView.Frame = fullSizeView.Frame;
-					newFullSizeView.Alpha = fullSizeView.Alpha;
+					if (fullSizeView!=null)
+					{
+						if (value!=null)
+						{
+							value.Frame = fullSizeView.Frame;
+							value.Alpha = fullSizeView.Alpha;
+						}
+					}
+					else
+					{
+						if (value!=null)
+						{
+							value.Frame = Bounds;
+							value.Alpha = 0;
+						}
+					}
 				}
 				else
 				{
-					newFullSizeView.Frame = Bounds;
-					newFullSizeView.Alpha = 0;
+					if (value!=null)
+					{
+						value.Frame = Bounds;
+						value.Alpha = 0;
+					}
 				}
+
+				if (value!=null)
+					defaultFullsizeViewResizingMask = value.AutoresizingMask | UIViewAutoresizing.FlexibleLeftMargin | UIViewAutoresizing.FlexibleRightMargin | UIViewAutoresizing.FlexibleTopMargin | UIViewAutoresizing.FlexibleBottomMargin;
+				
+				if (fullSizeView!=null)
+				{
+					if (value!=null)
+						value.AutoresizingMask = fullSizeView.AutoresizingMask;			
+					fullSizeView.RemoveFromSuperview();
+				}
+				
+				fullSizeView = value;
+				if (fullSizeView!=null)
+					AddSubview(fullSizeView);
+				BringSubviewToFront(deleteButton);
 			}
-			else
+			get
 			{
-				newFullSizeView.Frame = Bounds;
-				newFullSizeView.Alpha = 0;
+				return fullSizeView;
 			}
-
-			defaultFullsizeViewResizingMask = newFullSizeView.AutoresizingMask | UIViewAutoresizing.FlexibleLeftMargin | UIViewAutoresizing.FlexibleRightMargin | UIViewAutoresizing.FlexibleTopMargin | UIViewAutoresizing.FlexibleBottomMargin;
-
-			if (fullSizeView!=null)
-			{
-				newFullSizeView.AutoresizingMask = fullSizeView.AutoresizingMask;			
-				fullSizeView.RemoveFromSuperview();
-			}
-
-			fullSizeView = newFullSizeView;
-			AddSubview(fullSizeView);
-			BringSubviewToFront(deleteButton);
 		}
-		
-		public void setFullSize(SizeF newFullSize)
+
+		private SizeF fullSize;
+
+		public SizeF FullSize
 		{
-			fullSize = newFullSize;
-			SetNeedsLayout();
+			set
+			{
+				fullSize = value;
+				SetNeedsLayout();
+			}
+			get
+			{
+				return fullSize;
+			}
 		}
 
 		public void setEditing(bool isEditing)

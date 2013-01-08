@@ -323,7 +323,7 @@ namespace GridViewDemo
 		
 		public UIView GridViewFullSizeViewForCell (GridView gridView, GridViewCell cell, int index)
 		{
-			UIView fullView = new UIView();
+			UIView fullView = new UIView(new RectangleF());
 			fullView.BackgroundColor = UIColor.Yellow;
 			fullView.Layer.MasksToBounds = false;
 			fullView.Layer.CornerRadius = 8.0f;
