@@ -126,7 +126,7 @@ namespace GridView
 			CommonInit ();
 		}
 
-		GMGridViewLayoutStrategy layoutStrategy;
+		GridViewLayoutStrategy layoutStrategy;
 		UIView mainSuperView;
 		bool editing;
 		int itemSpacing;
@@ -226,7 +226,7 @@ namespace GridView
 			panGestureRecognizer.MaximumNumberOfTouches = 1;
 			panGestureRecognizer.RequireGestureRecognizerToFail(sortingPanGesture);
 			//layoutStrategy = GMGridViewLayoutStrategyFactory.StrategyFromType(GMGridViewLayoutStrategyType.Vertical);				
-			SetLayoutStrategy(GMGridViewLayoutStrategyFactory.StrategyFromType(GMGridViewLayoutStrategyType.Vertical));
+			SetLayoutStrategy(GridViewLayoutStrategyFactory.StrategyFromType(GridViewLayoutStrategyType.Vertical));
 			
 			mainSuperView = this;
 			editing = false;
@@ -468,7 +468,7 @@ namespace GridView
 			base.SetNeedsLayout();
 		}
 
-		public void SetLayoutStrategy(GMGridViewLayoutStrategy newLayoutStrategy)
+		public void SetLayoutStrategy(GridViewLayoutStrategy newLayoutStrategy)
 		{
 			layoutStrategy = newLayoutStrategy;
 			PagingEnabled = layoutStrategy.RequiresEnablingPaging();
@@ -592,7 +592,7 @@ namespace GridView
 				if (editing && disableEditOnEmptySpaceTap) 
 				{
 					PointF locationTouch = tapGesture.LocationInView(this);
-					int position = layoutStrategy.itemPositionFromLocation(locationTouch);
+					int position = layoutStrategy.ItemPositionFromLocation(locationTouch);
 					
 					valid = (position == GMGV_INVALID_POSITION);
 				}
@@ -616,8 +616,8 @@ namespace GridView
 					PointF locationTouch1 = gestureRecognizer.LocationOfTouch(0,this);
 					PointF locationTouch2 = gestureRecognizer.LocationOfTouch(1,this);
 					
-					int positionTouch1 = layoutStrategy.itemPositionFromLocation(locationTouch1);
-	                int positionTouch2 = layoutStrategy.itemPositionFromLocation(locationTouch2);
+					int positionTouch1 = layoutStrategy.ItemPositionFromLocation(locationTouch1);
+	                int positionTouch2 = layoutStrategy.ItemPositionFromLocation(locationTouch2);
 					
 					valid = !editing && (IsInTransformingState || ((positionTouch1 == positionTouch2) && (positionTouch1 != GMGV_INVALID_POSITION)));
 				}
@@ -660,7 +660,7 @@ namespace GridView
 			if (enableEditOnLongPress && !editing)
 			{
 				PointF locationTouch = longPressGesture.LocationInView(this);
-				int position = layoutStrategy.itemPositionFromLocation(locationTouch);
+				int position = layoutStrategy.ItemPositionFromLocation(locationTouch);
 				
 				if (position != GMGV_INVALID_POSITION) 
 				{
@@ -680,7 +680,7 @@ namespace GridView
 					{ 
 						PointF location = longPressGesture.LocationInView(this);
 						
-						int position = layoutStrategy.itemPositionFromLocation(location);
+						int position = layoutStrategy.ItemPositionFromLocation(location);
 						
 						if (position != GMGV_INVALID_POSITION) 
 						{
@@ -830,7 +830,7 @@ namespace GridView
 		
 		void SortingMoveDidStartAtPoint(PointF point)
 		{
-			int position = layoutStrategy.itemPositionFromLocation(point);
+			int position = layoutStrategy.ItemPositionFromLocation(point);
 			
 			GMGridViewCell item = CellForItemAtIndex(position);
 			BringSubviewToFront(item);
@@ -871,7 +871,7 @@ namespace GridView
 			sortMovingItem.Frame=frameInScroll;
 			AddSubview(sortMovingItem);
 
-			PointF newOrigin = layoutStrategy.originForItemAtPosition(sortFuturePosition);
+			PointF newOrigin = layoutStrategy.OriginForItemAtPosition(sortFuturePosition);
 			RectangleF newFrame = new RectangleF(newOrigin.X, newOrigin.Y, itemSize.Width, itemSize.Height);
 
 			UIView.Animate(kDefaultAnimationDuration,0,0,
@@ -896,7 +896,7 @@ namespace GridView
 		
 		void SortingMoveDidContinueToPoint(PointF point)
 		{
-			int position = layoutStrategy.itemPositionFromLocation(point);
+			int position = layoutStrategy.ItemPositionFromLocation(point);
 			int tag = position + kTagOffset;
 			
 			if (position != GMGV_INVALID_POSITION && position != sortFuturePosition && position < numberTotalItems) 
@@ -955,7 +955,7 @@ namespace GridView
 							{
 								UIView v = CellForItemAtIndex(position);
 								v.Tag = sortFuturePosition + kTagOffset;
-								PointF origin = layoutStrategy.originForItemAtPosition(sortFuturePosition);
+								PointF origin = layoutStrategy.OriginForItemAtPosition(sortFuturePosition);
 
 								UIView.Animate(kDefaultAnimationDuration,0,kDefaultAnimationOptions,
 								delegate
@@ -989,7 +989,7 @@ namespace GridView
 		public void TapGestureUpdated(UITapGestureRecognizer tapGesture_)
 		{
 			PointF locationTouch = tapGesture.LocationInView(this);				
-			int position = layoutStrategy.itemPositionFromLocation(locationTouch);
+			int position = layoutStrategy.ItemPositionFromLocation(locationTouch);
 			
 			if (position != GMGV_INVALID_POSITION) 
 			{
@@ -1030,7 +1030,7 @@ namespace GridView
 		private GMGridViewCell NewItemSubViewForPosition(int position)
 		{
 			GMGridViewCell cell = dataSource.gridViewCellForItemAtIndex(this,position);				
-			PointF origin = layoutStrategy.originForItemAtPosition(position);
+			PointF origin = layoutStrategy.OriginForItemAtPosition(position);
 			RectangleF frame = new RectangleF(origin.X, origin.Y, itemSize.Width, itemSize.Height);
 			
 			// To make sure the frame is not animated
@@ -1167,10 +1167,10 @@ namespace GridView
 
 		private void RecomputeSizeAnimated(bool animated)
 		{
-			layoutStrategy.setupItemSize(itemSize,itemSpacing,minEdgeInsets,centerGrid);
-			layoutStrategy.rebaseWithItemCount(numberTotalItems,Bounds);
+			layoutStrategy.SetupItemSize(itemSize,itemSpacing,minEdgeInsets,centerGrid);
+			layoutStrategy.RebaseWithItemCount(numberTotalItems,Bounds);
 
-			SizeF contentSize = layoutStrategy.getContentSize();
+			SizeF contentSize = layoutStrategy.GetContentSize();
 
 			minPossibleContentOffset = new PointF(0,0);
 			maxPossibleContentOffset = new PointF(contentSize.Width - Bounds.Size.Width + ContentInset.Right,contentSize.Height - Bounds.Size.Height + ContentInset.Bottom);
@@ -1212,7 +1212,7 @@ namespace GridView
 					if (view != sortMovingItem && view != transformingItem) 
 					{
 						int index = view.Tag - kTagOffset;
-						PointF origin = layoutStrategy.originForItemAtPosition(index);							
+						PointF origin = layoutStrategy.OriginForItemAtPosition(index);							
 						RectangleF newFrame = new RectangleF(origin.X, origin.Y, itemSize.Width, itemSize.Height);
 						
 						// IF statement added for performance reasons (Time Profiling in instruments)
@@ -1449,7 +1449,7 @@ namespace GridView
 			else if (transformingItem==null) 
 			{        
 				PointF locationTouch = gesture.LocationOfTouch(0,this);
-				int positionTouch = layoutStrategy.itemPositionFromLocation(locationTouch);
+				int positionTouch = layoutStrategy.ItemPositionFromLocation(locationTouch);
 				transformingItem = CellForItemAtIndex(positionTouch);
 				
 				RectangleF frameInMainView = ConvertRectToView(transformingItem.Frame,mainSuperView);
@@ -1528,7 +1528,7 @@ namespace GridView
 					transformingItem = null;
 					
 					int position = PositionForItemSubview(transformingView);						
-					PointF origin = layoutStrategy.originForItemAtPosition(position);
+					PointF origin = layoutStrategy.OriginForItemAtPosition(position);
 					
 					RectangleF finalFrameInScroll = new RectangleF(origin.X, origin.Y, itemSize.Width, itemSize.Height);
 					RectangleF finalFrameInSuperview = ConvertRectToView(finalFrameInScroll,mainSuperView);
@@ -1570,7 +1570,7 @@ namespace GridView
 
 		private void LoadRequiredItems()
 		{
-			NSRange rangeOfPositions = layoutStrategy.rangeOfPositionsInBoundsFromOffset(ContentOffset);
+			NSRange rangeOfPositions = layoutStrategy.RangeOfPositionsInBoundsFromOffset(ContentOffset);
 			NSRange loadedPositionsRange = new NSRange(firstPositionLoaded,lastPositionLoaded - firstPositionLoaded);
 
 			//Console.WriteLine(@"Range of locs: "+rangeOfPositions.ToString());
@@ -1614,7 +1614,7 @@ namespace GridView
 		{
 			//int cleanupCounter=0;
 
-			NSRange rangeOfPositions = layoutStrategy.rangeOfPositionsInBoundsFromOffset(ContentOffset);
+			NSRange rangeOfPositions = layoutStrategy.RangeOfPositionsInBoundsFromOffset(ContentOffset);
 			GMGridViewCell cell;
 			
 			if ((int)rangeOfPositions.Location > firstPositionLoaded) 
@@ -1753,7 +1753,7 @@ namespace GridView
 			UIView currentView = CellForItemAtIndex(index);
 			
 			GMGridViewCell cell = NewItemSubViewForPosition(index);
-			PointF origin = layoutStrategy.originForItemAtPosition(index);
+			PointF origin = layoutStrategy.OriginForItemAtPosition(index);
 			cell.Frame = new RectangleF(origin.X, origin.Y, itemSize.Width, itemSize.Height);
 			cell.Alpha = 0;
 			AddSubview(cell);
@@ -1784,7 +1784,7 @@ namespace GridView
 			index = Math.Max(0, index);
 			index = Math.Min(index,numberTotalItems);
 			
-			PointF origin = layoutStrategy.originForItemAtPosition(index);
+			PointF origin = layoutStrategy.OriginForItemAtPosition(index);
 			RectangleF targetRect = RectForPoint(origin,PagingEnabled);
 			
 			if (!PagingEnabled)
@@ -1946,8 +1946,8 @@ namespace GridView
 			view1.Tag = index2 + kTagOffset;
 			view2.Tag = index1 + kTagOffset;
 			
-			PointF view1Origin = layoutStrategy.originForItemAtPosition(index2);
-			PointF view2Origin = layoutStrategy.originForItemAtPosition(index1);
+			PointF view1Origin = layoutStrategy.OriginForItemAtPosition(index2);
+			PointF view2Origin = layoutStrategy.OriginForItemAtPosition(index1);
 			
 			view1.Frame = new RectangleF(view1Origin.X, view1Origin.Y, itemSize.Width, itemSize.Height);
 			view2.Frame = new RectangleF(view2Origin.X, view2Origin.Y, itemSize.Width, itemSize.Height);

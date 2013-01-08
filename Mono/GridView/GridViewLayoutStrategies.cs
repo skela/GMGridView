@@ -7,26 +7,26 @@ using System.Diagnostics;
 
 namespace GridView
 {
-	public class GMGridViewLayoutStrategyFactory
+	public class GridViewLayoutStrategyFactory
 	{
 
-		public static GMGridViewLayoutStrategy StrategyFromType(GMGridViewLayoutStrategyType type)
+		public static GridViewLayoutStrategy StrategyFromType(GridViewLayoutStrategyType type)
 		{
-			GMGridViewLayoutStrategy strategy = null;
+			GridViewLayoutStrategy strategy = null;
 			
 			switch (type) 
 			{
-				case GMGridViewLayoutStrategyType.Vertical:
-					strategy = new GMGridViewLayoutVerticalStrategy();
+				case GridViewLayoutStrategyType.Vertical:
+					strategy = new GridViewLayoutVerticalStrategy();
 					break;
-				case GMGridViewLayoutStrategyType.Horizontal:
-					strategy = new GMGridViewLayoutHorizontalStrategy();
+				case GridViewLayoutStrategyType.Horizontal:
+					strategy = new GridViewLayoutHorizontalStrategy();
 					break;
-				case GMGridViewLayoutStrategyType.HorizontalPagedLTR:
-					strategy = new GMGridViewLayoutHorizontalPagedLTRStrategy();
+				case GridViewLayoutStrategyType.HorizontalPagedLTR:
+					strategy = new GridViewLayoutHorizontalPagedLTRStrategy();
 					break;
-				case GMGridViewLayoutStrategyType.HorizontalPagedTTB:
-					strategy = new GMGridViewLayoutHorizontalPagedTTBStrategy();
+				case GridViewLayoutStrategyType.HorizontalPagedTTB:
+					strategy = new GridViewLayoutHorizontalPagedTTBStrategy();
 					break;
 			}
 
@@ -34,7 +34,7 @@ namespace GridView
 		}
 	}
 	
-	public enum GMGridViewLayoutStrategyType
+	public enum GridViewLayoutStrategyType
 	{
 		Vertical,
 		Horizontal,
@@ -42,32 +42,32 @@ namespace GridView
 		HorizontalPagedTTB
 	}
 
-	public interface GMGridViewLayoutStrategy
+	public interface GridViewLayoutStrategy
 	{
 		bool RequiresEnablingPaging();
-		GMGridViewLayoutStrategyType getType();
-		void setType(GMGridViewLayoutStrategyType type);
+		GridViewLayoutStrategyType GetGridLayoutStrategyType();
+		void SetGridLayoutStrategyType(GridViewLayoutStrategyType type);
 
 		// Setup
-		void setupItemSize(SizeF itemSize,int itemSpacing,UIEdgeInsets minEdgeInsets,bool isGridCentered);
+		void SetupItemSize(SizeF itemSize,int itemSpacing,UIEdgeInsets minEdgeInsets,bool isGridCentered);
 		
 		// Recomputing
-		void rebaseWithItemCount(int itemCount,RectangleF insideOfBounds);
+		void RebaseWithItemCount(int itemCount,RectangleF insideOfBounds);
 		
 		// Fetching the results
-		SizeF getContentSize();
-		PointF originForItemAtPosition(int position);
-		int itemPositionFromLocation(PointF location);
-		NSRange rangeOfPositionsInBoundsFromOffset(PointF offset);
+		SizeF GetContentSize();
+		PointF OriginForItemAtPosition(int position);
+		int ItemPositionFromLocation(PointF location);
+		NSRange RangeOfPositionsInBoundsFromOffset(PointF offset);
 	}
 
-	public class GMGridViewLayoutStrategyBase
+	public class GridViewLayoutStrategyBase
 	{
 		// Constants
 		public int GMGV_INVALID_POSITION = GMGridViewConstants.GMGV_INVALID_POSITION;
 
 		// All of these vars should be set in the init method
-		protected GMGridViewLayoutStrategyType type;
+		protected GridViewLayoutStrategyType type;
 		
 		// All of these vars should be set in the setup method of the child class
 		protected SizeF itemSize;
@@ -81,11 +81,11 @@ namespace GridView
 		protected RectangleF gridBounds;
 		protected SizeF contentSize;
 
-		public GMGridViewLayoutStrategyBase ()
+		public GridViewLayoutStrategyBase ()
 		{
 		}
 
-		public void setupItemSize(SizeF itemSize,int itemSpacing,UIEdgeInsets minEdgeInsets,bool isGridCentered)
+		public void SetupItemSize(SizeF itemSize,int itemSpacing,UIEdgeInsets minEdgeInsets,bool isGridCentered)
 		{
 			this.itemSize      = itemSize;
 			this.itemSpacing   = itemSpacing;
@@ -93,7 +93,7 @@ namespace GridView
 			this.centeredGrid  = isGridCentered;
 		}
 
-		public void setEdgeAndContentSizeFromAbsoluteContentSize(SizeF actualContentSize)
+		public void SetEdgeAndContentSizeFromAbsoluteContentSize(SizeF actualContentSize)
 		{
 			if (centeredGrid)
 			{
@@ -118,37 +118,37 @@ namespace GridView
 			contentSize = new SizeF(actualContentSize.Width+edgeInsets.Left+edgeInsets.Right,actualContentSize.Height+edgeInsets.Top+edgeInsets.Bottom);
 		}
 
-		public GMGridViewLayoutStrategyType getType()
+		public GridViewLayoutStrategyType GetGridLayoutStrategyType()
 		{
 			return type;
 		}
 
-		public void setType(GMGridViewLayoutStrategyType type)
+		public void SetGridLayoutStrategyType(GridViewLayoutStrategyType type)
 		{
 			this.type = type;
 		}
 
-		public SizeF getContentSize()
+		public SizeF GetContentSize()
 		{
 			return contentSize;
 		}
 	}
 
-	public class GMGridViewLayoutVerticalStrategy : GMGridViewLayoutStrategyBase,GMGridViewLayoutStrategy
+	public class GridViewLayoutVerticalStrategy : GridViewLayoutStrategyBase,GridViewLayoutStrategy
 	{
 		int  numberOfItemsPerRow;
 
-		public bool RequiresEnablingPaging()
+		public virtual bool RequiresEnablingPaging()
 		{
 			return false;
 		}
 
-		public GMGridViewLayoutVerticalStrategy()
+		public GridViewLayoutVerticalStrategy()
 		{
-			setType(GMGridViewLayoutStrategyType.Vertical);
+			SetGridLayoutStrategyType(GridViewLayoutStrategyType.Vertical);
 		}
 
-		public void rebaseWithItemCount(int count,RectangleF insideOfBounds)
+		public void RebaseWithItemCount(int count,RectangleF insideOfBounds)
 		{
 			itemCount  = count;
 			gridBounds = insideOfBounds;
@@ -170,10 +170,10 @@ namespace GridView
 			SizeF actualContentSize = new SizeF((float)Math.Ceiling(Math.Min(itemCount, numberOfItemsPerRow) * (itemSize.Width + itemSpacing)) - itemSpacing, 
 			                                    (float)Math.Ceiling(numberOfRows * (itemSize.Height + itemSpacing)) - itemSpacing);
 
-			setEdgeAndContentSizeFromAbsoluteContentSize(actualContentSize);
+			SetEdgeAndContentSizeFromAbsoluteContentSize(actualContentSize);
 		}
 
-		public PointF originForItemAtPosition(int position)		
+		public PointF OriginForItemAtPosition(int position)		
 		{
 			PointF origin = new PointF();
 			
@@ -189,7 +189,7 @@ namespace GridView
 			return origin;
 		}
 
-		public int itemPositionFromLocation(PointF location)
+		public int ItemPositionFromLocation(PointF location)
 		{
 
 			PointF relativeLocation = new PointF(location.X - edgeInsets.Left,
@@ -206,7 +206,7 @@ namespace GridView
 			}
 			else
 			{
-				PointF itemOrigin = originForItemAtPosition(position);
+				PointF itemOrigin = OriginForItemAtPosition(position);
 				RectangleF itemFrame = new RectangleF(itemOrigin.X, 
 				                              itemOrigin.Y, 
 				                              itemSize.Width, 
@@ -221,7 +221,7 @@ namespace GridView
 			return position;
 		}
 		
-		public NSRange rangeOfPositionsInBoundsFromOffset(PointF offset)
+		public NSRange RangeOfPositionsInBoundsFromOffset(PointF offset)
 		{
 			PointF contentOffset = new PointF(Math.Max(0, offset.X), 
 			                                  Math.Max(0, offset.Y));
@@ -239,21 +239,21 @@ namespace GridView
 		}
 	}
 
-	public class GMGridViewLayoutHorizontalStrategy : GMGridViewLayoutStrategyBase,GMGridViewLayoutStrategy
+	public class GridViewLayoutHorizontalStrategy : GridViewLayoutStrategyBase,GridViewLayoutStrategy
 	{
 		protected int numberOfItemsPerColumn;
 
-		public bool RequiresEnablingPaging()
+		public virtual bool RequiresEnablingPaging()
 		{
 			return false;
 		}
 
-		public GMGridViewLayoutHorizontalStrategy()		
+		public GridViewLayoutHorizontalStrategy()		
 		{
-			setType(GMGridViewLayoutStrategyType.Horizontal);
+			SetGridLayoutStrategyType(GridViewLayoutStrategyType.Horizontal);
 		}
 		
-		public virtual void rebaseWithItemCount(int count,RectangleF insideOfBounds)
+		public virtual void RebaseWithItemCount(int count,RectangleF insideOfBounds)
 		{
 			itemCount  = count;
 			gridBounds = insideOfBounds;
@@ -275,10 +275,10 @@ namespace GridView
 			SizeF actualContentSize = new SizeF((float)Math.Ceiling(numberOfColumns * (itemSize.Width + itemSpacing)) - itemSpacing, 
 			                                      (float)Math.Ceiling(Math.Min(itemCount, numberOfItemsPerColumn) * (itemSize.Height + itemSpacing)) - itemSpacing);
 			
-			setEdgeAndContentSizeFromAbsoluteContentSize(actualContentSize);
+			SetEdgeAndContentSizeFromAbsoluteContentSize(actualContentSize);
 		}
 		
-		public virtual PointF originForItemAtPosition(int position)
+		public virtual PointF OriginForItemAtPosition(int position)
 		{
 			PointF origin = new PointF();
 			
@@ -294,7 +294,7 @@ namespace GridView
 			return origin;
 		}
 		
-		public virtual int itemPositionFromLocation(PointF location)
+		public virtual int ItemPositionFromLocation(PointF location)
 		{
 			PointF relativeLocation = new PointF(location.X - edgeInsets.Left,
 			                                       location.Y - edgeInsets.Top);
@@ -310,7 +310,7 @@ namespace GridView
 			}
 			else
 			{
-				PointF itemOrigin = originForItemAtPosition(position);
+				PointF itemOrigin = OriginForItemAtPosition(position);
 				RectangleF itemFrame = new RectangleF(itemOrigin.X, 
 				                              itemOrigin.Y, 
 				                              itemSize.Width, 
@@ -325,7 +325,7 @@ namespace GridView
 			return position;
 		}
 		
-		public virtual NSRange rangeOfPositionsInBoundsFromOffset(PointF offset)
+		public virtual NSRange RangeOfPositionsInBoundsFromOffset(PointF offset)
 		{
 			PointF contentOffset = new PointF(Math.Max(0, offset.X), 
 			                                  Math.Max(0, offset.Y));
@@ -343,20 +343,20 @@ namespace GridView
 		}
 	}
 
-	public class GMGridViewLayoutHorizontalPagedStrategy : GMGridViewLayoutHorizontalStrategy
+	public class GridViewLayoutHorizontalPagedStrategy : GridViewLayoutHorizontalStrategy
 	{
 		protected int numberOfItemsPerRow;
 		protected int numberOfItemsPerPage;
 		protected int numberOfPages;
 
-		public bool RequiresEnablingPaging()
+		public override bool RequiresEnablingPaging()
 		{
 			return true;
 		}
 
-		public override void rebaseWithItemCount(int count,RectangleF insideOfBounds)
+		public override void RebaseWithItemCount(int count,RectangleF insideOfBounds)
 		{
-			base.rebaseWithItemCount(count,insideOfBounds);
+			base.RebaseWithItemCount(count,insideOfBounds);
 						
 			numberOfItemsPerRow = 1;
 			
@@ -397,12 +397,12 @@ namespace GridView
 			                        insideOfBounds.Size.Height);
 		}
 
-		public int pageForItemAtIndex(int index)
+		public int PageForItemAtIndex(int index)
 		{    
 			return (int)Math.Max(0, Math.Floor(index * 1.0 / numberOfItemsPerPage * 1.0));
 		}
 
-		public PointF originForItemAtColumn(int column,int row,int page)
+		public PointF OriginForItemAtColumn(int column,int row,int page)
 		{
 			PointF offset = new PointF(page * gridBounds.Size.Width, 
 			                             0);
@@ -414,38 +414,38 @@ namespace GridView
 			                   y + offset.Y);
 		}
 
-		public virtual int positionForItemAtColumn(int column,int row,int page)
+		public virtual int PositionForItemAtColumn(int column,int row,int page)
 		{
 			return column + row * numberOfItemsPerRow + (page * numberOfItemsPerPage); 
 		}
 
-		public virtual int columnForItemAtPosition(int position)
+		public virtual int ColumnForItemAtPosition(int position)
 		{
 			position %= numberOfItemsPerPage;
 			return position % numberOfItemsPerRow;;
 		}
 
-		public virtual int rowForItemAtPosition(int position)
+		public virtual int RowForItemAtPosition(int position)
 		{
 			position %= numberOfItemsPerPage;
 			return (int)Math.Floor((double) position / (double)numberOfItemsPerRow);
 		}
 
-		public override PointF originForItemAtPosition(int position)
+		public override PointF OriginForItemAtPosition(int position)
 		{
-			int page = pageForItemAtIndex(position);
+			int page = PageForItemAtIndex(position);
 			
 			position %= numberOfItemsPerPage;
 			
-			int row = rowForItemAtPosition(position);
-			int column = columnForItemAtPosition(position);
+			int row = RowForItemAtPosition(position);
+			int column = ColumnForItemAtPosition(position);
 			
-			PointF origin = originForItemAtColumn(column,row,page);
+			PointF origin = OriginForItemAtColumn(column,row,page);
 			
 			return origin;
 		}
 
-		public override int itemPositionFromLocation(PointF location)
+		public override int ItemPositionFromLocation(PointF location)
 		{
 			float fpage = 0;
 			while ((fpage + 1) * gridBounds.Size.Width < location.X) 
@@ -455,7 +455,7 @@ namespace GridView
 
 			int page = (int)fpage;
 
-			PointF originForFirstItemInPage = originForItemAtColumn(0,0,page);
+			PointF originForFirstItemInPage = OriginForItemAtColumn(0,0,page);
 			
 			PointF relativeLocation = new PointF(location.X - originForFirstItemInPage.X,
 			                                       location.Y - originForFirstItemInPage.Y);
@@ -463,7 +463,7 @@ namespace GridView
 			int col = (int) (relativeLocation.X / (itemSize.Width + itemSpacing)); 
 			int row = (int) (relativeLocation.Y / (itemSize.Height + itemSpacing));
 			
-			int position = positionForItemAtColumn(col,row,page);
+			int position = PositionForItemAtColumn(col,row,page);
 			
 			if (position >= itemCount || position < 0) 
 			{
@@ -471,7 +471,7 @@ namespace GridView
 			}
 			else
 			{
-				PointF itemOrigin = originForItemAtPosition(position);
+				PointF itemOrigin = OriginForItemAtPosition(position);
 				RectangleF itemFrame = new RectangleF(itemOrigin.X, 
 				                              itemOrigin.Y, 
 				                              itemSize.Width, 
@@ -486,7 +486,7 @@ namespace GridView
 			return position;
 		}
 
-		public override NSRange rangeOfPositionsInBoundsFromOffset(PointF offset)
+		public override NSRange RangeOfPositionsInBoundsFromOffset(PointF offset)
 		{
 			PointF contentOffset = new PointF(Math.Max(0, offset.X), 
 			                                  Math.Max(0, offset.Y));
@@ -500,33 +500,33 @@ namespace GridView
 		}
 	}
 
-	public class GMGridViewLayoutHorizontalPagedLTRStrategy : GMGridViewLayoutHorizontalPagedStrategy
+	public class GridViewLayoutHorizontalPagedLTRStrategy : GridViewLayoutHorizontalPagedStrategy
 	{
-		public GMGridViewLayoutHorizontalPagedLTRStrategy() : base()
+		public GridViewLayoutHorizontalPagedLTRStrategy() : base()
 		{
-			setType(GMGridViewLayoutStrategyType.HorizontalPagedLTR);
+			SetGridLayoutStrategyType(GridViewLayoutStrategyType.HorizontalPagedLTR);
 		}
 	}
 
-	public class GMGridViewLayoutHorizontalPagedTTBStrategy : GMGridViewLayoutHorizontalPagedStrategy
+	public class GridViewLayoutHorizontalPagedTTBStrategy : GridViewLayoutHorizontalPagedStrategy
 	{
-		public GMGridViewLayoutHorizontalPagedTTBStrategy() : base()
+		public GridViewLayoutHorizontalPagedTTBStrategy() : base()
 		{
-			setType(GMGridViewLayoutStrategyType.HorizontalPagedTTB);
+			SetGridLayoutStrategyType(GridViewLayoutStrategyType.HorizontalPagedTTB);
 		}
 
-		public override int positionForItemAtColumn(int column,int row,int page)
+		public override int PositionForItemAtColumn(int column,int row,int page)
 		{
 			return row + column * numberOfItemsPerColumn + (page * numberOfItemsPerPage); 
 		}
 		
-		public override int columnForItemAtPosition(int position)
+		public override int ColumnForItemAtPosition(int position)
 		{
 			position %= numberOfItemsPerPage;
 			return (int) Math.Floor( (double)position / (double)numberOfItemsPerColumn);
 		}
 		
-		public override int rowForItemAtPosition(int position)
+		public override int RowForItemAtPosition(int position)
 		{
 			position %= numberOfItemsPerPage;
 			return position % numberOfItemsPerColumn;
