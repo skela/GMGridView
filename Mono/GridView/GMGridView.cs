@@ -225,7 +225,8 @@ namespace GridView
 			}
 			panGestureRecognizer.MaximumNumberOfTouches = 1;
 			panGestureRecognizer.RequireGestureRecognizerToFail(sortingPanGesture);
-			layoutStrategy = GMGridViewLayoutStrategyFactory.StrategyFromType(GMGridViewLayoutStrategyType.Vertical);				
+			//layoutStrategy = GMGridViewLayoutStrategyFactory.StrategyFromType(GMGridViewLayoutStrategyType.Vertical);				
+			SetLayoutStrategy(GMGridViewLayoutStrategyFactory.StrategyFromType(GMGridViewLayoutStrategyType.Vertical));
 			
 			mainSuperView = this;
 			editing = false;
@@ -262,7 +263,10 @@ namespace GridView
 
 		public static bool NSLocationInRange(int loc, NSRange range) 
 		{
-			return (loc - range.Location < range.Length);
+			uint loci = (uint)loc;
+			uint rloc=(uint)range.Location;
+			uint rlen=(uint)range.Length;
+			return ( (loci - rloc) < rlen);
 		}
 
 		bool CGRectIntersectsRect (RectangleF rect1, RectangleF rect2)
@@ -458,7 +462,12 @@ namespace GridView
 				return mainSuperView;
 			}
 		}
-		
+
+		public override void SetNeedsLayout()
+		{
+			base.SetNeedsLayout();
+		}
+
 		public void SetLayoutStrategy(GMGridViewLayoutStrategy newLayoutStrategy)
 		{
 			layoutStrategy = newLayoutStrategy;
@@ -1565,6 +1574,8 @@ namespace GridView
 			NSRange loadedPositionsRange = new NSRange(firstPositionLoaded,lastPositionLoaded - firstPositionLoaded);
 
 			//Console.WriteLine(@"Range of locs: "+rangeOfPositions.ToString());
+			//Console.WriteLine(@"Range of loaded pos: "+loadedPositionsRange.ToString());
+
 
 			// calculate new position range
 			firstPositionLoaded = firstPositionLoaded == GMGV_INVALID_POSITION ? rangeOfPositions.Location : Math.Min(firstPositionLoaded, (int)rangeOfPositions.Location);
@@ -1575,7 +1586,7 @@ namespace GridView
 			CleanupUnseenItems();
 			
 			// add new cells
-			bool forceLoad = firstPositionLoaded == GMGV_INVALID_POSITION || lastPositionLoaded == GMGV_INVALID_POSITION;
+			bool forceLoad = (firstPositionLoaded == GMGV_INVALID_POSITION) || (lastPositionLoaded == GMGV_INVALID_POSITION);
 			int positionToLoad;
 			for (int i = 0; i < rangeOfPositions.Length; i++) 
 			{
@@ -1585,20 +1596,23 @@ namespace GridView
 
 				if ((forceLoad || !NSLocationInRange(positionToLoad, loadedPositionsRange)) && positionToLoad < numberTotalItems) 
 				{
+					//Console.WriteLine("ps to load is " + positionToLoad);
+
 					//Console.WriteLine ("I'm here");
 					if (CellForItemAtIndex(positionToLoad)==null) 
 					{
 						//Console.WriteLine ("Added grid cell at pos: " + positionToLoad.ToString());
 						GMGridViewCell cell = NewItemSubViewForPosition(positionToLoad);							
-						AddSubview(cell);
+						AddSubview(cell);					
 					}
 				}
-			}    
+			}   
+
 		}
 
 		private void CleanupUnseenItems()
 		{
-			int cleanupCounter=0;
+			//int cleanupCounter=0;
 
 			NSRange rangeOfPositions = layoutStrategy.rangeOfPositionsInBoundsFromOffset(ContentOffset);
 			GMGridViewCell cell;
@@ -1612,7 +1626,7 @@ namespace GridView
 					{
 						QueueReusableCell(cell);
 						cell.RemoveFromSuperview();
-						cleanupCounter++;
+						//cleanupCounter++;
 					}
 				}
 				
@@ -1629,11 +1643,11 @@ namespace GridView
 					{
 						QueueReusableCell(cell);
 						cell.RemoveFromSuperview();
-						cleanupCounter++;
+						//cleanupCounter++;
 					}
 				}
 
-				Console.WriteLine ("Cleaned up " + cleanupCounter);
+				//Console.WriteLine ("Cleaned up " + cleanupCounter);
 
 				lastPositionLoaded = NSMaxRange(rangeOfPositions);
 				SetSubviewsCacheAsInvalid();
