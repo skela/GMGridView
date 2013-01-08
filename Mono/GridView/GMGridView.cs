@@ -598,7 +598,7 @@ namespace GridView
 				}
 				else 
 				{
-					valid = !isScrolling && !editing && !longPressGesture.hasRecognizedValidGesture();
+					valid = !isScrolling && !editing && !longPressGesture.HasRecognizedValidGesture();
 				}
 			}
 			else if (gestureRecognizer == longPressGesture)
@@ -607,7 +607,7 @@ namespace GridView
 			}
 			else if (gestureRecognizer == sortingPanGesture) 
 			{
-				valid = (sortMovingItem != null && longPressGesture.hasRecognizedValidGesture());
+				valid = (sortMovingItem != null && longPressGesture.HasRecognizedValidGesture());
 			}
 			else if(gestureRecognizer == rotationGesture || gestureRecognizer == pinchGesture || gestureRecognizer == panGesture)
 			{

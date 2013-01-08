@@ -236,7 +236,7 @@ namespace GridView
 				}
 				
 				contentView.UserInteractionEnabled = !editing;
-				this.shakeStatus(editing);
+				this.ShakeStatus(editing);
 			}
 		}
 
@@ -288,7 +288,7 @@ namespace GridView
 			highlighted = aHighlighted;
 
 			Selector sel = new Selector("setHighlighted:");
-			contentView.recursiveEnumerateSubviewsUsingBlock(
+			contentView.RecursiveEnumerateSubviewsUsingBlock(
 			delegate(UIView view,out bool stop)
 			{
 				if (view.RespondsToSelector(sel))
@@ -331,7 +331,7 @@ namespace GridView
 		{
 			if ((on && !inShakingMode) || (!on && inShakingMode)) 
 			{
-				contentView.shakeStatus(on);
+				contentView.ShakeStatus(on);
 				inShakingMode = on;
 			}
 		}
