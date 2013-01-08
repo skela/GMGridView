@@ -7,7 +7,7 @@ using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
 using System.Collections.Generic;
 
-namespace GridView
+namespace Grid
 {
 	public static class GridViewAdditions
 	{

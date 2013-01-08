@@ -1,8 +1,8 @@
 using System;
 
-namespace GridView
+namespace Grid
 {
-	public class GMGridViewConstants
+	public class GridViewConstants
 	{
 		public static int GMGV_INVALID_POSITION
 		{

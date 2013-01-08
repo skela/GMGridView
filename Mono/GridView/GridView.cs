@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using MonoTouch.CoreGraphics;
 
-namespace GridView
+namespace Grid
 {
 	public enum GridViewStyle
 	{
@@ -37,11 +37,11 @@ namespace GridView
 	public interface GridViewDataSource
 	{			
 		//@required
-		int NumberOfItemsInGridView(GMGridView gridView);
-		SizeF GridViewSizeForItemsInInterfaceOrientation(GMGridView gridView,UIInterfaceOrientation orientation);
-		GridViewCell GridViewCellForItemAtIndex(GMGridView gridView,int index);
+		int NumberOfItemsInGridView(GridView gridView);
+		SizeF GridViewSizeForItemsInInterfaceOrientation(GridView gridView,UIInterfaceOrientation orientation);
+		GridViewCell GridViewCellForItemAtIndex(GridView gridView,int index);
 		//@optional
-		bool GridViewCanDeleteItemAtIndex(GMGridView gridView,int index); // Allow a cell to be deletable. If not implemented, YES is assumed.
+		bool GridViewCanDeleteItemAtIndex(GridView gridView,int index); // Allow a cell to be deletable. If not implemented, YES is assumed.
 	}
 	
 	#endregion
@@ -51,15 +51,15 @@ namespace GridView
 	public interface GridViewActionDelegate
 	{
 		//@required
-		void GridViewDidTapOnItemAtIndex(GMGridView gridView,int position);
+		void GridViewDidTapOnItemAtIndex(GridView gridView,int position);
 		
 		//@optional
 		// Tap on space without any items
-		void GridViewDidTapOnEmptySpace(GMGridView gridView);
+		void GridViewDidTapOnEmptySpace(GridView gridView);
 		// Called when the delete-button has been pressed. Required to enable editing mode.
 		// This method wont delete the cell automatically. Call the delete method of the gridView when appropriate.
-		void GridViewProcessDeleteActionForItemAtIndex(GMGridView gridView,int index);
-		void GridViewChangeEdit(GMGridView gridView,bool edit);
+		void GridViewProcessDeleteActionForItemAtIndex(GridView gridView,int index);
+		void GridViewChangeEdit(GridView gridView,bool edit);
 	}
 	
 	#endregion
@@ -70,15 +70,15 @@ namespace GridView
 	{
 		//@required
 		// Item moved - right place to update the data structure
-		void GridViewMoveItemAtIndex(GMGridView gridView,int oldIndex,int newIndex);
-		void GridViewExchangeItemAtIndex(GMGridView gridView,int index1,int index2);		
+		void GridViewMoveItemAtIndex(GridView gridView,int oldIndex,int newIndex);
+		void GridViewExchangeItemAtIndex(GridView gridView,int index1,int index2);		
 		
 		//@optional
 		// Sorting started/ended - indexes are not specified on purpose (not the right place to update data structure)
-		void GridViewDidStartMovingCell(GMGridView gridView,GridViewCell cell);
-		void GridViewDidEndMovingCell(GMGridView gridView,GridViewCell cell);
+		void GridViewDidStartMovingCell(GridView gridView,GridViewCell cell);
+		void GridViewDidEndMovingCell(GridView gridView,GridViewCell cell);
 		// Enable/Disable the shaking behavior of an item being moved
-		bool GridViewShouldAllowShakingBehaviorWhenMovingCell(GMGridView gridView,GridViewCell view,int index);
+		bool GridViewShouldAllowShakingBehaviorWhenMovingCell(GridView gridView,GridViewCell view,int index);
 	}
 	
 	#endregion
@@ -89,39 +89,39 @@ namespace GridView
 	{
 		//@required
 		// Fullsize
-		SizeF GridViewSizeInFullSizeForCell(GMGridView gridView,GridViewCell cell,int index,UIInterfaceOrientation orientation);
-		UIView GridViewFullSizeViewForCell(GMGridView gridView,GridViewCell cell,int index);
+		SizeF GridViewSizeInFullSizeForCell(GridView gridView,GridViewCell cell,int index,UIInterfaceOrientation orientation);
+		UIView GridViewFullSizeViewForCell(GridView gridView,GridViewCell cell,int index);
 
 		// Transformation (pinch, drag, rotate) of the item
 		//@optional
-		void GridViewDidStartTransformingCell(GMGridView gridView,GridViewCell cell);
-		void GridViewDidEnterFullSizeForCell(GMGridView gridView,GridViewCell cell);
-		void GridViewDidEndTransformingCell(GMGridView gridView,GridViewCell cell);
+		void GridViewDidStartTransformingCell(GridView gridView,GridViewCell cell);
+		void GridViewDidEnterFullSizeForCell(GridView gridView,GridViewCell cell);
+		void GridViewDidEndTransformingCell(GridView gridView,GridViewCell cell);
 	}
 	
 	#endregion
 
-	public class GMGridView : UIScrollView
+	public class GridView : UIScrollView
 	{
 		// Constants
-		public int GMGV_INVALID_POSITION = GMGridViewConstants.GMGV_INVALID_POSITION;
+		public int GMGV_INVALID_POSITION = GridViewConstants.GMGV_INVALID_POSITION;
 		public const int kTagOffset = 50;
 		public const float kDefaultAnimationDuration = 0.3f;
 		public const UIViewAnimationOptions kDefaultAnimationOptions = UIViewAnimationOptions.BeginFromCurrentState | UIViewAnimationOptions.AllowUserInteraction;
 
-		public GMGridView(IntPtr handle) : base(handle)
+		public GridView(IntPtr handle) : base(handle)
 		{
 			CommonInit ();
 		}
 		
 		[Export("initWithCoder:")]
-		public GMGridView (NSCoder coder) : base(coder)
+		public GridView (NSCoder coder) : base(coder)
 		{
 			CommonInit ();
 		}
 
 		[Export("initWithFrame:")]
-		public GMGridView (RectangleF rect) : base(rect)
+		public GridView (RectangleF rect) : base(rect)
 		{
 			CommonInit ();
 		}
@@ -632,9 +632,9 @@ namespace GridView
 
 		private class GridGestureRecognizer : UIGestureRecognizerDelegate
 		{
-			GMGridView gridView;
+			GridView gridView;
 
-			public GridGestureRecognizer(GMGridView gridView) : base()
+			public GridGestureRecognizer(GridView gridView) : base()
 			{
 				this.gridView = gridView;
 			}
@@ -1044,7 +1044,7 @@ namespace GridView
 			bool canEdit = editing && dataSource.GridViewCanDeleteItemAtIndex(this,position);
 			cell.setEditing(canEdit,animated:false);
 			
-			GMGridView weakSelf = this;
+			GridView weakSelf = this;
 			cell.DeleteBlock = delegate(GridViewCell aCell)
 			{
 				int index = weakSelf.PositionForItemSubview(aCell);

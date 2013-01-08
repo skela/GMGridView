@@ -88,10 +88,10 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="GridViewLayoutStrategies.cs" />
-    <Compile Include="GMGridView.cs" />
-    <Compile Include="GMGridViewConstants.cs" />
     <Compile Include="GridViewCell.cs" />
     <Compile Include="GridViewAdditions.cs" />
+    <Compile Include="GridViewConstants.cs" />
+    <Compile Include="GridView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

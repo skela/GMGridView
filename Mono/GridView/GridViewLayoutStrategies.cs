@@ -5,7 +5,7 @@ using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using System.Diagnostics;
 
-namespace GridView
+namespace Grid
 {
 	public class GridViewLayoutStrategyFactory
 	{
@@ -64,7 +64,7 @@ namespace GridView
 	public class GridViewLayoutStrategyBase
 	{
 		// Constants
-		public int GMGV_INVALID_POSITION = GMGridViewConstants.GMGV_INVALID_POSITION;
+		public int GMGV_INVALID_POSITION = GridViewConstants.GMGV_INVALID_POSITION;
 
 		// All of these vars should be set in the init method
 		protected GridViewLayoutStrategyType type;

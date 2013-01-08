@@ -5,7 +5,7 @@ using MonoTouch.UIKit;
 using MonoTouch.ObjCRuntime;
 using MonoTouch.Foundation;
 
-namespace GridView
+namespace Grid
 {
 	public class GridViewCell : UIView
 	{
