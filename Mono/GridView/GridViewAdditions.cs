@@ -9,7 +9,7 @@ using System.Collections.Generic;
 
 namespace GridView
 {
-	public static class GMGridViewAdditions
+	public static class GridViewAdditions
 	{
 		public static void ShakeStatus(this UIView self,bool enabled)		
 		{
