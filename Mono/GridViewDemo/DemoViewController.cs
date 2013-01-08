@@ -353,43 +353,79 @@ namespace GridViewDemo
 		
 		public void GridViewDidStartTransformingCell (GridView gridView, GridViewCell cell)
 		{
-			
+			UIView.Animate(0.5,0,UIViewAnimationOptions.AllowUserInteraction,
+			delegate
+			{
+				cell.ContentView.BackgroundColor = UIColor.Blue;
+				cell.ContentView.Layer.ShadowOpacity = 0.7f;
+			},
+			delegate
+			{
+
+			});
 		}
-		
+
+		public void GridViewDidEndTransformingCell (GridView gridView, GridViewCell cell)
+		{
+			UIView.Animate(0.5,0,UIViewAnimationOptions.AllowUserInteraction,
+			               delegate
+			               {
+				cell.ContentView.BackgroundColor = UIColor.Red;
+				cell.ContentView.Layer.ShadowOpacity = 0;
+			},
+			delegate
+			{
+				
+			});
+		}
+
 		public void GridViewDidEnterFullSizeForCell (GridView gridView, GridViewCell cell)
 		{
 			
 		}
-		
-		public void GridViewDidEndTransformingCell (GridView gridView, GridViewCell cell)
-		{
-			
-		}
-		
-		#endregion
-		
 
-		
+		#endregion
+
 		#region GMGridViewSortingDelegate implementation
 		
 		public void GridViewMoveItemAtIndex (GridView gridView, int oldIndex, int newIndex)
 		{
-			
+			String obj = currentData[oldIndex];
+			currentData.Remove(obj);
+			currentData.Insert(newIndex,obj);
 		}
 		
 		public void GridViewExchangeItemAtIndex (GridView gridView, int index1, int index2)
 		{
-			
+			currentData.ExchangeObjectAtIndex(index1,index2);
 		}
 		
 		public void GridViewDidStartMovingCell (GridView gridView, GridViewCell cell)
 		{
-			
+			UIView.Animate(0.3,0,UIViewAnimationOptions.AllowUserInteraction,
+			delegate
+			{
+				cell.ContentView.BackgroundColor = UIColor.Orange;
+				cell.ContentView.Layer.ShadowOpacity = 0.7f;
+			},
+			delegate
+			{
+				
+			});
 		}
 		
 		public void GridViewDidEndMovingCell (GridView gridView, GridViewCell cell)
 		{
-			
+			UIView.Animate(0.3,0,UIViewAnimationOptions.AllowUserInteraction,
+			delegate
+			{
+				cell.ContentView.BackgroundColor = UIColor.Red;
+				cell.ContentView.Layer.ShadowOpacity = 0;
+			},
+			delegate
+			{
+				
+			});
 		}
 		
 		public bool GridViewShouldAllowShakingBehaviorWhenMovingCell (GridView gridView, GridViewCell view, int index)

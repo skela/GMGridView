@@ -6,6 +6,7 @@ using MonoTouch.CoreGraphics;
 using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace Grid
 {
@@ -76,6 +77,27 @@ namespace Grid
 		public static void RemoveAll<T>(this HashSet<T> self)
 		{
 			self.Clear();
+		}
+
+		public static void ExchangeObjectAtIndex<T>(this IList<T> list,int firstIndex,int secondIndex)
+		{
+			list.ExchangeObjectsAtIndeces(firstIndex,secondIndex);
+		}
+
+		public static void ExchangeObjectsAtIndeces<T>(this IList<T> list,int firstIndex,int secondIndex) 
+		{
+			Contract.Requires(list != null);
+			Contract.Requires(firstIndex >= 0 && firstIndex < list.Count);
+			Contract.Requires(secondIndex >= 0 && secondIndex < list.Count);
+
+			if (firstIndex == secondIndex) 
+			{
+				return;
+			}
+
+			T temp = list[firstIndex];
+			list[firstIndex] = list[secondIndex];
+			list[secondIndex] = temp;
 		}
 
 		public static bool IsLandscape(this UIInterfaceOrientation self)

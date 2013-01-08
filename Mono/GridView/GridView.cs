@@ -1350,7 +1350,7 @@ namespace Grid
 				case UIGestureRecognizerState.Changed:
 				{
 					NSNumber val = transformingItem.ContentView.Layer.ValueForKey(new NSString("transform.scale")) as NSNumber;
-					float currentScale = val.FloatValue;											
+					float currentScale = val!=null ? val.FloatValue : 1.0f;
 					float scale = 1 - (lastScale - pinchGesture.Scale);
 					
 					//todo: compute these scale factors dynamically based on ratio of thumbnail/fullscreen sizes
@@ -1762,8 +1762,8 @@ namespace Grid
 			AddSubview(cell);
 			
 			currentView.Tag = kTagOffset - 1;
-			bool shouldScroll = animation == GridViewItemAnimation.Scroll;
-			bool animate = animation == GridViewItemAnimation.Fade;
+			bool shouldScroll = animation.HasFlag(GridViewItemAnimation.Scroll);
+			bool animate = animation.HasFlag(GridViewItemAnimation.Fade);
 			UIView.Animate(animate ? kDefaultAnimationDuration : 0.0,0.0,kDefaultAnimationOptions,
 			delegate
 			{
@@ -1816,6 +1816,7 @@ namespace Grid
 			}
 			
 			// Better performance animating ourselves instead of using animated:YES in scrollRectToVisible
+			/*
 			UIView.Animate(animated ? kDefaultAnimationDuration : 0,0,kDefaultAnimationOptions,
 			delegate
 			{
@@ -1824,7 +1825,8 @@ namespace Grid
 			delegate
 			{
 
-			});
+			});*/
+			ScrollRectToVisible(targetRect,animated);
 		}
 		
 		public void InsertObjectAtIndex(int index,bool animated)
@@ -1863,7 +1865,7 @@ namespace Grid
 			numberTotalItems++;
 			RecomputeSizeAnimated(animation!=GridViewItemAnimation.None);
 			
-			bool shouldScroll = animation == GridViewItemAnimation.Scroll;
+			bool shouldScroll = animation.HasFlag(GridViewItemAnimation.Scroll);
 			if (shouldScroll)
 			{
 				UIView.Animate (kDefaultAnimationDuration,0,kDefaultAnimationOptions,
@@ -1895,38 +1897,43 @@ namespace Grid
 			
 			GridViewCell cell = CellForItemAtIndex(index);
 
-			if (cell==null)
-				return;
-
 			for (int i = index + 1; i < numberTotalItems; i++)
 			{
 				GridViewCell oldView = CellForItemAtIndex(i);
 				oldView.Tag = oldView.Tag - 1;
 			}
-			
-			cell.Tag = kTagOffset - 1;
+
+			if (cell!=null)
+				cell.Tag = kTagOffset - 1;
 			numberTotalItems--;
-			
-			bool shouldScroll = animation == GridViewItemAnimation.Scroll;
-			bool animate = animation == GridViewItemAnimation.Fade;
+
+			bool shouldScroll = animation.HasFlag(GridViewItemAnimation.Scroll);
+			bool animate = animation.HasFlag(GridViewItemAnimation.Fade);
+			//bool shouldScroll = animation == GridViewItemAnimation.Scroll;
+			//bool animate = animation == GridViewItemAnimation.Fade;
 
 			UIView.Animate(animate ? kDefaultAnimationDuration : 0.0f,0,kDefaultAnimationOptions,
 			delegate
 			{
-				cell.ContentView.Alpha = 0.3f;
-				cell.Alpha = 0.0f;
+				if (cell!=null)
+				{
+					cell.ContentView.Alpha = 0.3f;
+					cell.Alpha = 0.0f;
+				}
 				
 				if (shouldScroll) 
 				{
-					ScrollToObjectAtIndex(index,GridViewScrollPosition.None,false);
+					ScrollToObjectAtIndex(index,GridViewScrollPosition.None,animate);
 				}
 				RecomputeSizeAnimated((animation != GridViewItemAnimation.None));
 			},
 			delegate
 			{
-				cell.ContentView.Alpha = 1.0f;
+				if (cell!=null)
+					cell.ContentView.Alpha = 1.0f;
 				QueueReusableCell(cell);
-				cell.RemoveFromSuperview();
+				if (cell!=null)
+					cell.RemoveFromSuperview();
 
 				firstPositionLoaded = lastPositionLoaded = GMGV_INVALID_POSITION;
 				LoadRequiredItems();
@@ -1965,7 +1972,7 @@ namespace Grid
 			                                		ContentSize.Height);
 			
 			// Better performance animating ourselves instead of using animated:YES in scrollRectToVisible
-			bool shouldScroll = animation == GridViewItemAnimation.Scroll;
+			bool shouldScroll = animation.HasFlag(GridViewItemAnimation.Scroll);				
 			UIView.Animate(kDefaultAnimationDuration,0,kDefaultAnimationOptions,
 			delegate
 			{
