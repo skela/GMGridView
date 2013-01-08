@@ -501,7 +501,9 @@ namespace GridViewDemo
 		[Export("presentInfo")]
 		public void PresentInfo()
 		{
-
+			String info = "Long-press an item and its color will change; letting you know that you can now move it around. \n\nUsing two fingers, pinch/drag/rotate an item; zoom it enough and you will enter the fullsize mode";			
+			UIAlertView alertView = new UIAlertView("Info",info,null,"OK",null);
+			alertView.Show();
 		}
 
 		#endregion

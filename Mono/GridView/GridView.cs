@@ -1419,7 +1419,7 @@ namespace Grid
 					lastRotation = rotationGesture.Rotation;
 					
 
-				}break;
+				} break;
 				default:
 				{
 				} break;
@@ -1464,9 +1464,7 @@ namespace Grid
 				transformingItem.fullSize = transformDelegate.GridViewSizeInFullSizeForCell(this,transformingItem,positionTouch,UIApplication.SharedApplication.StatusBarOrientation);
 				transformingItem.fullSizeView = transformDelegate.GridViewFullSizeViewForCell(this,transformingItem,positionTouch);
 
-
-
-				transformDelegate.GridViewDidEndTransformingCell(this,transformingItem);
+				transformDelegate.GridViewDidStartTransformingCell(this,transformingItem);
 			}
 		}
 
