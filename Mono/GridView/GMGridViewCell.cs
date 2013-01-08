@@ -61,12 +61,24 @@ namespace GridView
 
 		#region Constructors
 
-		public GMGridViewCell ()
+		public GMGridViewCell () : base(new RectangleF())
 		{
 			prep();
 		}
 
+		[Export("initWithFrame:")]
 		public GMGridViewCell (RectangleF frame) : base(frame)
+		{
+			prep();
+		}
+
+		[Export("initWithCoder:")]
+		public GMGridViewCell (NSCoder coder) : base(coder)
+		{
+			prep();
+		}
+
+		public GMGridViewCell (IntPtr handle) : base(handle)
 		{
 			prep();
 		}

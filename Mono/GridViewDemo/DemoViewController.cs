@@ -84,7 +84,7 @@ namespace GridViewDemo
 			else
 				NavigationItem.LeftBarButtonItem = addButton;
 						
-			UIBarButtonItem optionsButton = new UIBarButtonItem(UIBarButtonSystemItem.Compose,this,new Selector("presentOptions"));
+			UIBarButtonItem optionsButton = new UIBarButtonItem(UIBarButtonSystemItem.Refresh,this,new Selector("refreshGrid"));
 
 			if (IsIpad)			
 				NavigationItem.RightBarButtonItems = new UIBarButtonItem[]{optionsButton};
@@ -244,7 +244,13 @@ namespace GridViewDemo
 				
 				cell.ContentView = view;
 			}
-
+			else
+			{
+				RectangleF f = cell.Frame;
+				f.Size = size;
+				cell.Frame = f;
+				cell.Alpha = 1.0f;
+			}
 			cell.RemoveContentViewSubviews();
 
 			UILabel label = new UILabel(cell.ContentView.Bounds);				
@@ -417,6 +423,12 @@ namespace GridViewDemo
 		{
 			Random random = new Random();
 			return random.Next (0,1000);
+		}
+
+		[Export("refreshGrid")]
+		public void RefreshGrid()
+		{
+			gmGridView.ReloadData();
 		}
 
 		[Export("addMoreItem")]

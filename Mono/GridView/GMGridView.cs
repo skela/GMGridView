@@ -311,14 +311,15 @@ namespace GridView
 				{
 					itemSize = newItemSize;
 
-					foreach (GMGridViewCell cell in ItemSubviews)
+					ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell cell,out bool stop)
 					{
+						stop=false;
 						if (cell != transformingItem) 
 						{
 							cell.Bounds = new RectangleF(0, 0, itemSize.Width, itemSize.Height);
 							cell.ContentView.Frame = cell.Bounds;
 						}
-					}
+					});
 				}
 				
 				// Updating the fullview size
@@ -529,15 +530,16 @@ namespace GridView
 		{
 			if (actionDelegate!=null && !IsInTransformingState && ((editing && !shouldEdit) || (!editing && shouldEdit)))
 			{
-				foreach (GMGridViewCell cell in ItemSubviews) 
+				ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell cell,out bool stop)
 				{
+					stop=false;
 					int index = PositionForItemSubview(cell);
 					if (index != GMGV_INVALID_POSITION)
 					{
 						bool allowEdit = shouldEdit && dataSource.gridViewCanDeleteItemAtIndex(this,index);	
 						cell.setEditing(allowEdit,animated);
 					}
-				}				
+				});
 				editing = shouldEdit;
 			}
 		}
@@ -683,7 +685,7 @@ namespace GridView
 				case UIGestureRecognizerState.Cancelled:
 				case UIGestureRecognizerState.Failed:
 				{
-					sortingPanGesture.end();
+					sortingPanGesture.End();
 					
 					if (sortMovingItem!=null) 
 					{                
@@ -892,14 +894,15 @@ namespace GridView
 			{
 				bool positionTaken = false;
 				
-				foreach(UIView v in ItemSubviews)
+				ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell v,out bool stop)
 				{
+					stop = false;
 					if (v != sortMovingItem && v.Tag == tag) 
 					{
 						positionTaken = true;
-						break;
+						stop = true;
 					}
-				}
+				});
 				
 				if (positionTaken)
 				{
@@ -909,25 +912,27 @@ namespace GridView
 						{
 							if (position > sortFuturePosition) 
 							{
-								foreach (UIView v in ItemSubviews)
+								ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell v,out bool stop)
 								{
+									stop=false;
 									if ((v.Tag == tag || (v.Tag < tag && v.Tag >= sortFuturePosition + kTagOffset)) && v != sortMovingItem ) 
 									{
 										v.Tag = v.Tag - 1;
 										SendSubviewToBack(v);
 									}
-								}
+								});
 							}
 							else
 							{
-								foreach (UIView v in ItemSubviews)
+								ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell v,out bool stop)
 								{
+									stop=false;
 									if ((v.Tag == tag || (v.Tag > tag && v.Tag <= sortFuturePosition + kTagOffset)) && v != sortMovingItem) 
 									{
 										v.Tag = v.Tag + 1;
 										SendSubviewToBack(v);
 									}
-								}
+								});
 							}
 
 							sortingDelegate.gridViewMoveItemAtIndex(this,sortFuturePosition,position);
@@ -981,9 +986,13 @@ namespace GridView
 			{
 				if (!editing) 
 				{
-					CellForItemAtIndex(position).IsHighlighted = false;
-					if (actionDelegate!=null)
-						actionDelegate.gridViewDidTapOnItemAtIndex(this,position);
+					var cell = CellForItemAtIndex(position);
+					if (cell!=null)
+					{
+						cell.IsHighlighted = false;
+						if (actionDelegate!=null)
+							actionDelegate.gridViewDidTapOnItemAtIndex(this,position);
+					}
 				}
 			}
 			else
@@ -1042,10 +1051,9 @@ namespace GridView
 			
 			return cell;
 		}
-
+		/*
 		List<GMGridViewCell>itemSubviewsCache;
 		object subviewsLocker=new object();
-
 		public List<GMGridViewCell>ItemSubviews
 		{
 			get
@@ -1079,6 +1087,49 @@ namespace GridView
 					}
 				}
 
+				Console.WriteLine ("subviews count is " + subviews.Count);
+
+				return subviews;
+			}
+		}*/
+
+		NSArray itemSubviewsCache;
+		object subviewsLocker=new object();
+		public NSArray ItemSubviews
+		{
+			get
+			{
+				NSArray subviews = null;
+
+				if (itemsSubviewsCacheIsValid) 
+				{
+					subviews = (NSArray)itemSubviewsCache.Copy ();
+
+					//Console.WriteLine ("subviews count is " + subviews.Count);
+				}
+				else
+				{
+					lock(subviewsLocker)					
+					{
+						NSMutableArray itemSubViews = new NSMutableArray(numberTotalItems);
+
+						foreach (UIView  v in Subviews)
+						{
+							if (v is GMGridViewCell)
+							{
+								itemSubViews.Add (v);
+							}
+						}
+						
+						subviews = itemSubViews;
+
+						itemSubviewsCache = (NSArray)subviews.Copy ();
+						itemsSubviewsCacheIsValid = true;
+
+						//Console.WriteLine ("NEW subviews count is " + subviews.Count);
+					}
+				}
+
 				return subviews;
 			}
 		}
@@ -1086,15 +1137,16 @@ namespace GridView
 		private GMGridViewCell CellForItemAtIndex(int position)
 		{
 			GMGridViewCell view = null;
-			
-			foreach (GMGridViewCell v in ItemSubviews)
+
+			ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell v,out bool stop)
 			{
+				stop=false;
 				if (v.Tag == position + kTagOffset) 
 				{
 					view = v;
-					break;
+					stop = true;
 				}
-			}
+			});
 
 			return view;
 		}
@@ -1111,12 +1163,13 @@ namespace GridView
 
 			SizeF contentSize = layoutStrategy.getContentSize();
 
-			minPossibleContentOffset = new PointF(0, 0);
-			maxPossibleContentOffset = new PointF(contentSize.Width - Bounds.Size.Width + ContentInset.Right, 
-			                                      contentSize.Height - Bounds.Size.Height + ContentInset.Bottom);
+			minPossibleContentOffset = new PointF(0,0);
+			maxPossibleContentOffset = new PointF(contentSize.Width - Bounds.Size.Width + ContentInset.Right,contentSize.Height - Bounds.Size.Height + ContentInset.Bottom);
 			
 			bool shouldUpdateScrollviewContentSize = !ContentSize.Equals(contentSize);				
-			
+
+			//Console.WriteLine("Should update contentsize: " + shouldUpdateScrollviewContentSize.ToString());
+
 			if (shouldUpdateScrollviewContentSize)
 			{
 				if (animated)
@@ -1140,10 +1193,13 @@ namespace GridView
 
 		private void RelayoutItemsAnimated(bool animated)
 		{
+			//Console.WriteLine ("Relayout animated " + animated);
+
 			RelayoutBlock layoutBlock = delegate 
 			{
-				foreach (UIView view in ItemSubviews)
+				ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell view,out bool stop)
 				{
+					stop=false;
 					if (view != sortMovingItem && view != transformingItem) 
 					{
 						int index = view.Tag - kTagOffset;
@@ -1156,7 +1212,7 @@ namespace GridView
 							view.Frame = newFrame;
 						}
 					}
-				}
+				});
 			};
 			
 			if (animated) 
@@ -1230,7 +1286,8 @@ namespace GridView
 				{
 					// TODO:  wtf is this?
 					//[NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(transformingGestureDidFinish) object:nil];
-					PerformSelector(new Selector("transformingGestureDidFinish"),null,0.1);
+					Selector sel = new Selector("transformingGestureDidFinish");
+					PerformSelector(sel,null,0.1);
 
 					ScrollEnabled = true;
 
@@ -1247,7 +1304,7 @@ namespace GridView
 				{
 					if (panGesture.NumberOfTouches != 2) 
 					{
-						panGesture.end();
+						panGesture.End();
 					}
 					
 					PointF translate = panGesture.TranslationInView(this);
@@ -1506,11 +1563,13 @@ namespace GridView
 		{
 			NSRange rangeOfPositions = layoutStrategy.rangeOfPositionsInBoundsFromOffset(ContentOffset);
 			NSRange loadedPositionsRange = new NSRange(firstPositionLoaded,lastPositionLoaded - firstPositionLoaded);
-			
+
+			//Console.WriteLine(@"Range of locs: "+rangeOfPositions.ToString());
+
 			// calculate new position range
 			firstPositionLoaded = firstPositionLoaded == GMGV_INVALID_POSITION ? rangeOfPositions.Location : Math.Min(firstPositionLoaded, (int)rangeOfPositions.Location);
 			lastPositionLoaded  = lastPositionLoaded == GMGV_INVALID_POSITION ? NSMaxRange(rangeOfPositions) : Math.Max(lastPositionLoaded, (int)(rangeOfPositions.Length + rangeOfPositions.Location));
-			
+
 			// remove now invisible items
 			SetSubviewsCacheAsInvalid();
 			CleanupUnseenItems();
@@ -1521,11 +1580,15 @@ namespace GridView
 			for (int i = 0; i < rangeOfPositions.Length; i++) 
 			{
 				positionToLoad = i + rangeOfPositions.Location;
-				
+
+				//Console.WriteLine("NSLocationInRange:" + NSLocationInRange(positionToLoad, loadedPositionsRange).ToString());
+
 				if ((forceLoad || !NSLocationInRange(positionToLoad, loadedPositionsRange)) && positionToLoad < numberTotalItems) 
 				{
+					//Console.WriteLine ("I'm here");
 					if (CellForItemAtIndex(positionToLoad)==null) 
 					{
+						//Console.WriteLine ("Added grid cell at pos: " + positionToLoad.ToString());
 						GMGridViewCell cell = NewItemSubViewForPosition(positionToLoad);							
 						AddSubview(cell);
 					}
@@ -1535,6 +1598,8 @@ namespace GridView
 
 		private void CleanupUnseenItems()
 		{
+			int cleanupCounter=0;
+
 			NSRange rangeOfPositions = layoutStrategy.rangeOfPositionsInBoundsFromOffset(ContentOffset);
 			GMGridViewCell cell;
 			
@@ -1547,14 +1612,13 @@ namespace GridView
 					{
 						QueueReusableCell(cell);
 						cell.RemoveFromSuperview();
+						cleanupCounter++;
 					}
 				}
 				
 				firstPositionLoaded = rangeOfPositions.Location;
 				SetSubviewsCacheAsInvalid();
 			}
-
-
 
 			if ((int)NSMaxRange(rangeOfPositions) < lastPositionLoaded) 
 			{
@@ -1565,9 +1629,12 @@ namespace GridView
 					{
 						QueueReusableCell(cell);
 						cell.RemoveFromSuperview();
+						cleanupCounter++;
 					}
 				}
-				
+
+				Console.WriteLine ("Cleaned up " + cleanupCounter);
+
 				lastPositionLoaded = NSMaxRange(rangeOfPositions);
 				SetSubviewsCacheAsInvalid();
 			}
@@ -1628,14 +1695,15 @@ namespace GridView
 		{
 			PointF previousContentOffset = ContentOffset;
 
-			foreach (UIView obj in ItemSubviews)
+			ItemSubviews.EnumerateGridCells(delegate(GMGridViewCell obj,out bool stop)
 			{
+				stop=false;
 				if (obj is GMGridViewCell)				    
 				{
 					obj.RemoveFromSuperview();
 					QueueReusableCell((GMGridViewCell)obj);
 				}
-			}
+			});
 			
 			firstPositionLoaded = GMGV_INVALID_POSITION;
 			lastPositionLoaded  = GMGV_INVALID_POSITION;

@@ -3,6 +3,7 @@ using System.Drawing;
 
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
+using System.Diagnostics;
 
 namespace GridView
 {
@@ -113,9 +114,8 @@ namespace GridView
 			{
 				edgeInsets = minEdgeInsets;
 			}
-			
-			contentSize = new SizeF(actualContentSize.Width  + edgeInsets.Left + edgeInsets.Right, 
-			                          actualContentSize.Height + edgeInsets.Top  + edgeInsets.Bottom);
+
+			contentSize = new SizeF(actualContentSize.Width+edgeInsets.Left+edgeInsets.Right,actualContentSize.Height+edgeInsets.Top+edgeInsets.Bottom);
 		}
 
 		public GMGridViewLayoutStrategyType getType()
@@ -157,7 +157,7 @@ namespace GridView
 			                                         0, 
 			                                 insideOfBounds.Size.Width  - minEdgeInsets.Right - minEdgeInsets.Left, 
 			                                 insideOfBounds.Size.Height - minEdgeInsets.Top   - minEdgeInsets.Bottom);
-			
+
 			numberOfItemsPerRow = 1;
 			
 			while ((numberOfItemsPerRow + 1) * (itemSize.Width + itemSpacing) - itemSpacing <= actualBounds.Size.Width)
@@ -185,7 +185,7 @@ namespace GridView
 				origin = new PointF(col * (itemSize.Width + itemSpacing) + edgeInsets.Left,
 				                     row * (itemSize.Height + itemSpacing) + edgeInsets.Top);
 			}
-			
+
 			return origin;
 		}
 
@@ -217,7 +217,7 @@ namespace GridView
 					position = GMGV_INVALID_POSITION;
 				}
 			}
-			
+
 			return position;
 		}
 		

@@ -48,7 +48,20 @@ namespace GridView
 			}
 		}
 
-		public static void end(this UIGestureRecognizer self)		
+		public delegate void EnumerateGridCellBlock(GMGridViewCell cell,out bool stop);
+		public static void EnumerateGridCells(this NSArray array,EnumerateGridCellBlock block)
+		{
+			GMGridViewCell[] list = NSArray.FromArray<GMGridViewCell>(array);
+			foreach (GMGridViewCell cell in list)
+			{
+				bool stop = false;
+				block(cell,out stop);
+				if (stop)
+					return;
+			}
+		}
+
+		public static void End(this UIGestureRecognizer self)		
 		{
 			bool currentStatus = self.Enabled;
 			self.Enabled = false;
