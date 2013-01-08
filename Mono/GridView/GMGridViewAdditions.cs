@@ -11,7 +11,7 @@ namespace GridView
 {
 	public static class GMGridViewAdditions
 	{
-		public static void shakeStatus(this UIView self,bool enabled)		
+		public static void ShakeStatus(this UIView self,bool enabled)		
 		{
 			if (enabled) 
 			{
@@ -33,7 +33,7 @@ namespace GridView
 		}
 
 		public delegate void RecursiveEnumerateSubviewsBlock(UIView view, out bool stop);
-		public static void recursiveEnumerateSubviewsUsingBlock(this UIView self,RecursiveEnumerateSubviewsBlock block)
+		public static void RecursiveEnumerateSubviewsUsingBlock(this UIView self,RecursiveEnumerateSubviewsBlock block)
 		{
 			if (self.Subviews.Length==0)
 				return;
@@ -44,7 +44,7 @@ namespace GridView
 				block(subView,out stop);
 				if (stop)
 					return;
-				subView.recursiveEnumerateSubviewsUsingBlock(block);
+				subView.RecursiveEnumerateSubviewsUsingBlock(block);
 			}
 		}
 
@@ -68,12 +68,11 @@ namespace GridView
 			self.Enabled = currentStatus;
 		}
 
-		public static bool hasRecognizedValidGesture(this UIGestureRecognizer self)		
+		public static bool HasRecognizedValidGesture(this UIGestureRecognizer self)		
 		{
 			return (self.State == UIGestureRecognizerState.Changed || self.State == UIGestureRecognizerState.Began);
 		}
 
-		//public static void RemoveAll(this HashSet<GMGridViewCell> self)
 		public static void RemoveAll<T>(this HashSet<T> self)
 		{
 			self.Clear();
