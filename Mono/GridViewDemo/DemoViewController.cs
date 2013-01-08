@@ -47,22 +47,6 @@ namespace GridViewDemo
 			CommonInit();
 		}
 
-		private static bool IsIpad
-		{
-			get
-			{
-				return true;
-			}
-		}
-
-		private static bool IsIphone
-		{
-			get 
-			{
-				return !IsIpad;
-			}
-		}
-
 		private void CommonInit()
 		{
 			Title = "Demo 1";
@@ -79,14 +63,14 @@ namespace GridViewDemo
 			
 			UIBarButtonItem refreshButton = new UIBarButtonItem(UIBarButtonSystemItem.Refresh,this,new Selector("refreshItem"));
 
-			if (IsIpad)
+			if (GridViewConstants.IsIpad)
 				NavigationItem.LeftBarButtonItems = new UIBarButtonItem[]{addButton, space, removeButton, space2, refreshButton};
 			else
 				NavigationItem.LeftBarButtonItem = addButton;
 						
 			UIBarButtonItem optionsButton = new UIBarButtonItem(UIBarButtonSystemItem.Refresh,this,new Selector("refreshGrid"));
 
-			if (IsIpad)			
+			if (GridViewConstants.IsIpad)			
 				NavigationItem.RightBarButtonItems = new UIBarButtonItem[]{optionsButton};
 			else
 				NavigationItem.RightBarButtonItem = optionsButton;
@@ -118,7 +102,7 @@ namespace GridViewDemo
 		
 			View.BackgroundColor = UIColor.White;
 						
-			int spacing = IsIphone ? 10 : 15;
+			int spacing = GridViewConstants.IsIphone ? 10 : 15;
 			
 			GridView aGridView = new GridView(View.Bounds);				
 			aGridView.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
@@ -199,7 +183,7 @@ namespace GridViewDemo
 		
 		public SizeF GridViewSizeForItemsInInterfaceOrientation (GridView gridView, UIInterfaceOrientation orientation)
 		{
-			if (IsIphone)
+			if (GridViewConstants.IsIphone)
 			{
 				if (orientation.IsLandscape())				
 				{
@@ -225,8 +209,6 @@ namespace GridViewDemo
 		
 		public GridViewCell GridViewCellForItemAtIndex (GridView gridView, int index)
 		{
-			//NSLog(@"Creating view indx %d", index);
-			
 			SizeF size = GridViewSizeForItemsInInterfaceOrientation(gridView,UIApplication.SharedApplication.StatusBarOrientation);
 			
 			GridViewCell cell = gridView.DequeueReusableCell();				
@@ -315,7 +297,7 @@ namespace GridViewDemo
 		
 		public SizeF GridViewSizeInFullSizeForCell (GridView gridView, GridViewCell cell, int index, UIInterfaceOrientation orientation)
 		{
-			if (IsIphone) 
+			if (GridViewConstants.IsIphone) 
 			{
 				if (orientation.IsLandscape())
 				{
@@ -355,7 +337,7 @@ namespace GridViewDemo
 			label.BackgroundColor = UIColor.Clear;
 			label.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
 			
-			if (IsIphone) 
+			if (GridViewConstants.IsIphone) 
 			{
 				label.Font = UIFont.BoldSystemFontOfSize(15.0f);
 			}
@@ -434,7 +416,6 @@ namespace GridViewDemo
 		[Export("addMoreItem")]
 		public void AddAnotherItem()
 		{
-
 			// Example: adding object at the last position
 			String newItem = String.Format("{0}", RandomNumber());
 
@@ -468,8 +449,8 @@ namespace GridViewDemo
 				String newMessage = String.Format ("{0}", RandomNumber());
 
 				currentData.ReplaceObjectAtIndex(index,newMessage);
-				demoGridView.ReloadObjectAtIndex(index,GridViewItemAnimation.Fade | GridViewItemAnimation.Scroll);
 
+				demoGridView.ReloadObjectAtIndex(index,GridViewItemAnimation.Fade | GridViewItemAnimation.Scroll);
 			}
 		}
 
@@ -479,6 +460,12 @@ namespace GridViewDemo
 			currentData = (control.SelectedSegment == 0) ? data : data2;
 
 			demoGridView.ReloadData();
+		}
+
+		[Export("presentInfo")]
+		public void PresentInfo()
+		{
+
 		}
 
 		#endregion

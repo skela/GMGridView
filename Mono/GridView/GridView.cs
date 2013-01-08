@@ -1751,7 +1751,10 @@ namespace Grid
 			Debug.Assert((index >= 0 && index < numberTotalItems), "Invalid index");
 			
 			UIView currentView = CellForItemAtIndex(index);
-			
+
+			if (currentView==null)
+				return;
+
 			GridViewCell cell = NewItemSubViewForPosition(index);
 			PointF origin = layoutStrategy.OriginForItemAtPosition(index);
 			cell.Frame = new RectangleF(origin.X, origin.Y, itemSize.Width, itemSize.Height);
@@ -1891,7 +1894,10 @@ namespace Grid
 			Debug.Assert((index >= 0 && index < numberTotalItems), "Invalid index specified");
 			
 			GridViewCell cell = CellForItemAtIndex(index);
-			
+
+			if (cell==null)
+				return;
+
 			for (int i = index + 1; i < numberTotalItems; i++)
 			{
 				GridViewCell oldView = CellForItemAtIndex(i);
