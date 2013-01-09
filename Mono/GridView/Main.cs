@@ -5,7 +5,7 @@ using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
-namespace Grid
+namespace GridInternal
 {
 	public class Application
 	{

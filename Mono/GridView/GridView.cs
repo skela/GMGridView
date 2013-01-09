@@ -746,7 +746,7 @@ namespace Grid
 		bool autoScrollActive;
 
 		[Export("sortingAutoScrollMovementCheck")]
-		void SortingAutoScrollMovementCheck()
+		public void SortingAutoScrollMovementCheck()
 		{
 			if (sortMovingItem!=null && autoScrollActive) 
 			{
