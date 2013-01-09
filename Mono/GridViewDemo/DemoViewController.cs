@@ -216,8 +216,8 @@ namespace GridViewDemo
 			if (cell==null) 
 			{
 				cell = new GridViewCell();
-				cell.setDeleteButtonIcon(null);
-				cell.setDeleteButtonOffset(new PointF(-15, -15));
+				cell.DeleteButtonIcon=null;
+				cell.DeleteButtonOffset=new PointF(-15, -15);
 				
 				UIView view = new UIView(new RectangleF(0,0,size.Width,size.Height));					
 				view.BackgroundColor = UIColor.Red;

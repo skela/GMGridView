@@ -546,7 +546,7 @@ namespace Grid
 					if (index != GMGV_INVALID_POSITION)
 					{
 						bool allowEdit = shouldEdit && dataSource.GridViewCanDeleteItemAtIndex(this,index);	
-						cell.setEditing(allowEdit,animated);
+						cell.SetEditing(allowEdit,animated);
 					}
 				});
 				editing = shouldEdit;
@@ -852,17 +852,17 @@ namespace Grid
 			
 			if (sortingDelegate!=null)
 			{
-				sortMovingItem.shake(sortingDelegate.GridViewShouldAllowShakingBehaviorWhenMovingCell(this,sortMovingItem,position));			
+				sortMovingItem.Shake(sortingDelegate.GridViewShouldAllowShakingBehaviorWhenMovingCell(this,sortMovingItem,position));			
 			}
 			else
 			{
-				sortMovingItem.shake(true);				
+				sortMovingItem.Shake(true);				
 			}
 		}
 		
 		void SortingMoveDidStopAtPoint(PointF point)
 		{
-			sortMovingItem.shake(false);
+			sortMovingItem.Shake(false);
 			sortMovingItem.Tag = sortFuturePosition + kTagOffset;
 			 
 			RectangleF frameInScroll = mainSuperView.ConvertRectToView(sortMovingItem.Frame,this);
@@ -1042,7 +1042,7 @@ namespace Grid
 
 			cell.Tag = position + kTagOffset;
 			bool canEdit = editing && dataSource.GridViewCanDeleteItemAtIndex(this,position);
-			cell.setEditing(canEdit,animated:false);
+			cell.SetEditing(canEdit,animated:false);
 			
 			GridView weakSelf = this;
 			cell.DeleteBlock = delegate(GridViewCell aCell)
@@ -1379,7 +1379,7 @@ namespace Grid
 						
 						if (showFullSizeViewWithAlphaWhenTransforming && currentScale >= 1.5) 
 						{
-							transformingItem.stepToFullsizeWithAlpha(alpha);
+							transformingItem.StepToFullsizeWithAlpha(alpha);
 						}
 						
 						transformingItem.BackgroundColor = UIColor.DarkGray.ColorWithAlpha((float)Math.Min(alpha, 0.9));							
@@ -1441,7 +1441,7 @@ namespace Grid
 				
 				PointF center = transformingItem.FullSizeView.Center;
 				
-				transformingItem.switchToFullSizeMode(false);					
+				transformingItem.SwitchToFullSizeMode(false);					
 				CGAffineTransform newTransform = CGAffineTransform.MakeScale(2.5f, 2.5f);
 				transformingItem.ContentView.Transform = newTransform;
 				transformingItem.ContentView.Center = center;
@@ -1491,7 +1491,7 @@ namespace Grid
 					float rotationValue = (float)Math.Atan2(transformingItem.ContentView.Transform.xy,transformingItem.ContentView.Transform.xx);
 					
 					transformingItem.ContentView.Transform = CGAffineTransform.MakeIdentity();
-					transformingItem.switchToFullSizeMode(true);
+					transformingItem.SwitchToFullSizeMode(true);
 
 					transformingItem.BackgroundColor = UIColor.DarkGray.ColorWithAlpha(0.9f);
 
@@ -1531,7 +1531,7 @@ namespace Grid
 					RectangleF finalFrameInScroll = new RectangleF(origin.X, origin.Y, itemSize.Width, itemSize.Height);
 					RectangleF finalFrameInSuperview = ConvertRectToView(finalFrameInScroll,mainSuperView);
 
-					transformingView.switchToFullSizeMode(false);
+					transformingView.SwitchToFullSizeMode(false);
 					transformingView.AutoresizingMask = UIViewAutoresizing.None;
 
 					UIView.Animate(kDefaultAnimationDuration,0,kDefaultAnimationOptions,
@@ -1656,7 +1656,7 @@ namespace Grid
 		{
 			if (cell!=null) 
 			{
-				cell.prepareForReuse();
+				cell.PrepareForReuse();
 				cell.Alpha = 1;
 				cell.BackgroundColor = UIColor.Clear;
 				reusableCells.Add(cell);

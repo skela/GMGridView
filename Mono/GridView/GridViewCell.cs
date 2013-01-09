@@ -11,18 +11,6 @@ namespace Grid
 	{
 		private UIView contentView;         // The contentView - default is nil
 		public String reuseIdentifier;
-		private bool highlighted;
-		public bool IsHighlighted
-		{
-			get
-			{
-				return highlighted;
-			}
-			set
-			{
-				highlighted = value;
-			}
-		}
 
 		bool inShakingMode;
 		public bool IsInShakingMode
@@ -42,15 +30,6 @@ namespace Grid
 			}
 		}
 
-		bool editing;
-		public bool IsEditing
-		{
-			get
-			{
-				return editing;
-			}
-		}
-
 		public UIViewAutoresizing defaultFullsizeViewResizingMask;
 		public UIButton deleteButton;
 
@@ -60,27 +39,27 @@ namespace Grid
 
 		public GridViewCell () : base(new RectangleF())
 		{
-			prep();
+			Prep();
 		}
 
 		[Export("initWithFrame:")]
 		public GridViewCell (RectangleF frame) : base(frame)
 		{
-			prep();
+			Prep();
 		}
 
 		[Export("initWithCoder:")]
 		public GridViewCell (NSCoder coder) : base(coder)
 		{
-			prep();
+			Prep();
 		}
 
 		public GridViewCell (IntPtr handle) : base(handle)
 		{
-			prep();
+			Prep();
 		}
 
-		private void prep()
+		private void Prep()
 		{
 			AutosizesSubviews = !true;
 			editing = false;
@@ -88,8 +67,8 @@ namespace Grid
 			UIButton delButton = new UIButton(UIButtonType.Custom);				
 			deleteButton = delButton;
 			deleteButton.SetTitleColor(UIColor.Black,UIControlState.Normal);
-			setDeleteButtonIcon(null);
-			setDeleteButtonOffset(new PointF(-5,-5));
+			DeleteButtonIcon = null;
+			DeleteButtonOffset=new PointF(-5,-5);
 			deleteButton.Alpha = 0.0f;
 			AddSubview(deleteButton);
 			deleteButton.AddTarget(this,new Selector("actionDelete"),UIControlEvent.TouchUpInside);
@@ -153,7 +132,7 @@ namespace Grid
 			}
 			set
 			{
-				shake(false);
+				Shake(false);
 				
 				if(contentView!=null)
 				{
@@ -229,7 +208,6 @@ namespace Grid
 		}
 
 		private SizeF fullSize;
-
 		public SizeF FullSize
 		{
 			set
@@ -243,12 +221,20 @@ namespace Grid
 			}
 		}
 
-		public void setEditing(bool isEditing)
+		private bool editing;
+		public bool IsEditing
 		{
-			setEditing(isEditing,false);
+			get
+			{
+				return editing;
+			}
+			set
+			{
+				SetEditing(value,false);
+			}
 		}
-		
-		public void setEditing(bool isEditing,bool animated)
+
+		public void SetEditing(bool isEditing,bool animated)
 		{
 			if (isEditing != editing) 
 			{
@@ -266,63 +252,77 @@ namespace Grid
 				this.ShakeStatus(editing);
 			}
 		}
-
-		public void setDeleteButtonOffset(PointF offset)
-		{
-			deleteButton.Frame = new RectangleF(offset.X,offset.Y,deleteButton.Frame.Size.Width,deleteButton.Frame.Size.Height);
-		}
 		
-		public PointF deleteButtonOffset
+		public PointF DeleteButtonOffset
 		{
 			get
 			{
 				return deleteButton.Frame.Location;
 			}
-		}
-
-		public void setDeleteButtonIcon(UIImage newDeleteButtonIcon)
-		{
-			deleteButton.SetImage(newDeleteButtonIcon,UIControlState.Normal);
-			
-			if (newDeleteButtonIcon!=null) 
+			set
 			{
-				deleteButton.Frame = new RectangleF(deleteButton.Frame.X, 
-				                                     deleteButton.Frame.Y, 
-				                                    newDeleteButtonIcon.Size.Width, 
-				                                    newDeleteButtonIcon.Size.Height);
-				deleteButton.SetTitle(null,UIControlState.Normal);
-				deleteButton.BackgroundColor = UIColor.Clear;
-			}
-			else
-			{
-				deleteButton.Frame = new RectangleF(deleteButton.Frame.X, 
-				                                     deleteButton.Frame.Y, 
-				                                     35, 
-				                                     35);
-
-				deleteButton.SetTitle("X",UIControlState.Normal);
-				deleteButton.BackgroundColor  = UIColor.LightGray;
+				PointF offset = value;
+				deleteButton.Frame = new RectangleF(offset.X,offset.Y,deleteButton.Frame.Size.Width,deleteButton.Frame.Size.Height);
 			}
 		}
 
-		public UIImage deleteButtonIcon()
+		public UIImage DeleteButtonIcon
 		{
-			return deleteButton.CurrentImage;
-		}
-
-		public void setHighlighted(bool aHighlighted)
-		{		
-			highlighted = aHighlighted;
-
-			Selector sel = new Selector("setHighlighted:");
-			contentView.RecursiveEnumerateSubviewsUsingBlock(
-			delegate(UIView view,out bool stop)
+			set
 			{
-				if (view.RespondsToSelector(sel))
+				UIImage newDeleteButtonIcon = value;
+
+				deleteButton.SetImage(newDeleteButtonIcon,UIControlState.Normal);
+				
+				if (newDeleteButtonIcon!=null) 
 				{
-					((UIControl)view).Highlighted = highlighted;
+					deleteButton.Frame = new RectangleF(deleteButton.Frame.X, 
+					                                     deleteButton.Frame.Y, 
+					                                    newDeleteButtonIcon.Size.Width, 
+					                                    newDeleteButtonIcon.Size.Height);
+					deleteButton.SetTitle(null,UIControlState.Normal);
+					deleteButton.BackgroundColor = UIColor.Clear;
 				}
-			});
+				else
+				{
+					deleteButton.Frame = new RectangleF(deleteButton.Frame.X, 
+					                                     deleteButton.Frame.Y, 
+					                                     35, 
+					                                     35);
+
+					deleteButton.SetTitle("X",UIControlState.Normal);
+					deleteButton.BackgroundColor  = UIColor.LightGray;
+				}
+			}
+			get
+			{
+				return deleteButton.CurrentImage;
+			}
+		}
+
+		private bool highlighted;
+		public bool IsHighlighted
+		{
+			get
+			{
+				return highlighted;
+			}
+			set
+			{
+				highlighted = value;
+
+				Selector sel = new Selector("setHighlighted:");
+				NSNumber isHigh = NSNumber.FromBoolean(highlighted);
+				contentView.RecursiveEnumerateSubviewsUsingBlock(
+				delegate(UIView view,out bool stop)
+				{
+					if (view.RespondsToSelector(sel))
+					{
+						view.PerformSelector(sel,isHigh,0);
+						//((UIControl)view).Highlighted = highlighted;
+					}
+				});
+			}
 		}
 
 		#endregion
@@ -346,7 +346,7 @@ namespace Grid
 
 		#region Public Methods
 
-		public virtual void prepareForReuse()
+		public virtual void PrepareForReuse()
 		{
 			fullSize = new SizeF();
 			fullSizeView = null;
@@ -354,7 +354,7 @@ namespace Grid
 			DeleteBlock = null;
 		}
 
-		public void shake(bool on)
+		public void Shake(bool on)
 		{
 			if ((on && !inShakingMode) || (!on && inShakingMode)) 
 			{
@@ -363,7 +363,7 @@ namespace Grid
 			}
 		}
 		
-		public void switchToFullSizeMode(bool fullSizeEnabled)
+		public void SwitchToFullSizeMode(bool fullSizeEnabled)
 		{
 			if (fullSizeEnabled) 
 			{
@@ -399,12 +399,11 @@ namespace Grid
 				contentView.Alpha  = 0.6f;
 
 				UIView.Animate(0.3,
-				 delegate
-				{
-				 
+				delegate
+				{				
 					contentView.Alpha  = 1.0f;
 					fullSizeView.Frame = Bounds;
-				 },
+				},
 				delegate
 				{
 					SetNeedsLayout(); 
@@ -414,7 +413,7 @@ namespace Grid
 			}
 		}
 		
-		public void stepToFullsizeWithAlpha(float alpha)
+		public void StepToFullsizeWithAlpha(float alpha)
 		{
 			return; // not supported anymore - to be fixed
 			
