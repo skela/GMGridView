@@ -1434,45 +1434,20 @@ namespace Grid
 			{
 				pinchGesture.Scale = 2.5f;
 			}
-			
+
 			if (inTransformingState)
-			{        
+			{   
 				inTransformingState = false;
-				
-				PointF center = transformingItem.FullSizeView.Center;
-				
 				transformingItem.SwitchToFullSizeMode(false);					
 				CGAffineTransform newTransform = CGAffineTransform.MakeScale(2.5f, 2.5f);
 				transformingItem.ContentView.Transform = newTransform;
-				transformingItem.ContentView.Center = center;
+				transformingItem.ContentView.Center = transformingItem.FullSizeView.Center;
 			}
 			else if (transformingItem==null) 
 			{        
 				PointF locationTouch = gesture.LocationOfTouch(0,this);
 				int positionTouch = layoutStrategy.ItemPositionFromLocation(locationTouch);
-				transformingItem = CellForItemAtIndex(positionTouch);
-				
-				RectangleF frameInMainView = ConvertRectToView(transformingItem.Frame,mainSuperView);
-
-				transformingItem.RemoveFromSuperview();
-				transformingItem.Frame = mainSuperView.Bounds;
-				transformingItem.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-				transformingItem.ContentView.Frame = frameInMainView;
-				mainSuperView.AddSubview(transformingItem);
-				mainSuperView.BringSubviewToFront(transformingItem);
-								
-				transformingItem.FullSize = transformDelegate.GridViewSizeInFullSizeForCell(this,transformingItem,positionTouch,UIApplication.SharedApplication.StatusBarOrientation);
-				transformingItem.FullSizeView = transformDelegate.GridViewFullSizeViewForCell(this,transformingItem,positionTouch);
-
-				transformDelegate.GridViewDidStartTransformingCell(this,transformingItem);
-			}
-		}
-
-		private bool IsInTransformingState
-		{
-			get
-			{
-				return transformingItem != null;
+				TransformingGestureDidBeginAtPosition(positionTouch);
 			}
 		}
 
@@ -1482,40 +1457,8 @@ namespace Grid
 			if (IsInTransformingState) 
 			{
 				if (lastScale > 2 && !inTransformingState) 
-				{            
-					lastRotation = 0;
-					lastScale = 1;
-
-					BringSubviewToFront(transformingItem);
-
-					float rotationValue = (float)Math.Atan2(transformingItem.ContentView.Transform.xy,transformingItem.ContentView.Transform.xx);
-					
-					transformingItem.ContentView.Transform = CGAffineTransform.MakeIdentity();
-					transformingItem.SwitchToFullSizeMode(true);
-
-					transformingItem.BackgroundColor = UIColor.DarkGray.ColorWithAlpha(0.9f);
-
-					transformingItem.FullSizeView.Transform =  CGAffineTransform.MakeRotation(rotationValue);
-
-					UIView.Animate(kDefaultAnimationDuration,0,kDefaultAnimationOptions,
-					delegate
-					{
-						transformingItem.FullSizeView.Transform = CGAffineTransform.MakeIdentity();
-					},
-					delegate
-					{
-
-					});
-				
-					inTransformingState = true;
-					inFullSizeMode = true;
-
-					transformDelegate.GridViewDidEnterFullSizeForCell(this,transformingItem);
-
-					// Transfer the gestures on the fullscreen to make is they are accessible (depends on self.mainSuperView)
-					transformingItem.FullSizeView.AddGestureRecognizer(pinchGesture);
-					transformingItem.FullSizeView.AddGestureRecognizer(rotationGesture);
-					transformingItem.FullSizeView.AddGestureRecognizer(panGesture);
+				{
+					TransformingGestureDidEnd();
 				}
 				else if (!inTransformingState)
 				{
@@ -1559,6 +1502,83 @@ namespace Grid
 						AddGestureRecognizer(panGesture);
 					});
 				}
+			}
+		}
+
+		private void TransformingGestureDidBeginAtPosition(int position)
+		{
+			transformingItem = CellForItemAtIndex(position);
+			
+			RectangleF frameInMainView = ConvertRectToView(transformingItem.Frame,mainSuperView);
+			
+			transformingItem.RemoveFromSuperview();
+			transformingItem.Frame = mainSuperView.Bounds;
+			transformingItem.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+			transformingItem.ContentView.Frame = frameInMainView;
+			mainSuperView.AddSubview(transformingItem);
+			mainSuperView.BringSubviewToFront(transformingItem);
+			
+			transformingItem.FullSize = transformDelegate.GridViewSizeInFullSizeForCell(this,transformingItem,position,UIApplication.SharedApplication.StatusBarOrientation);
+			transformingItem.FullSizeView = transformDelegate.GridViewFullSizeViewForCell(this,transformingItem,position);
+			
+			transformDelegate.GridViewDidStartTransformingCell(this,transformingItem);
+		}
+		
+		private void TransformingGestureDidEnd()
+		{
+			lastRotation = 0;
+			lastScale = 1;
+			
+			BringSubviewToFront(transformingItem);
+			
+			float rotationValue = (float)Math.Atan2(transformingItem.ContentView.Transform.xy,transformingItem.ContentView.Transform.xx);
+			
+			transformingItem.ContentView.Transform = CGAffineTransform.MakeIdentity();
+			transformingItem.SwitchToFullSizeMode(true);
+			
+			transformingItem.BackgroundColor = UIColor.DarkGray.ColorWithAlpha(0.9f);
+			
+			transformingItem.FullSizeView.Transform =  CGAffineTransform.MakeRotation(rotationValue);
+			
+			UIView.Animate(kDefaultAnimationDuration,0,kDefaultAnimationOptions,
+            delegate
+            {
+				transformingItem.FullSizeView.Transform = CGAffineTransform.MakeIdentity();
+			},
+			delegate
+			{
+				
+			});
+			
+			inTransformingState = true;
+			inFullSizeMode = true;
+			
+			transformDelegate.GridViewDidEnterFullSizeForCell(this,transformingItem);
+			
+			// Transfer the gestures on the fullscreen to make is they are accessible (depends on self.mainSuperView)
+			transformingItem.FullSizeView.AddGestureRecognizer(pinchGesture);
+			transformingItem.FullSizeView.AddGestureRecognizer(rotationGesture);
+			transformingItem.FullSizeView.AddGestureRecognizer(panGesture);
+		}
+		
+		public void DisplayFullScreenForPosition(int position)
+		{
+			if (transformingItem!=null)
+			{
+				transformingItem.SwitchToFullSizeMode(false);
+				transformDelegate.GridViewDidEndTransformingCell(this,transformingItem);
+				transformingItem=null;
+				ReloadData();
+			}
+			TransformingGestureDidBeginAtPosition(position);
+			TransformingGestureDidEnd();
+		}
+
+		private bool IsInTransformingState
+		{
+			get
+			{
+				return transformingItem != null;
 			}
 		}
 
