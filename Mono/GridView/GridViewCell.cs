@@ -86,7 +86,8 @@ namespace Grid
 			{
 				PointF origin = new PointF((Bounds.Size.Width - fullSize.Width) / 2, 
 				                           (Bounds.Size.Height - fullSize.Height) / 2);
-				fullSizeView.Frame = new RectangleF(origin.X, origin.Y, fullSize.Width, fullSize.Height);
+				if (fullSizeView!=null)
+					fullSizeView.Frame = new RectangleF(origin.X, origin.Y, fullSize.Width, fullSize.Height);
 			}
 			else
 			{
