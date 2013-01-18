@@ -1508,7 +1508,8 @@ namespace Grid
 		private void TransformingGestureDidBeginAtPosition(int position)
 		{
 			transformingItem = CellForItemAtIndex(position);
-			
+			if (transformingItem==null)
+				return;
 			RectangleF frameInMainView = ConvertRectToView(transformingItem.Frame,mainSuperView);
 			
 			transformingItem.RemoveFromSuperview();
