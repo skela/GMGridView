@@ -317,6 +317,7 @@ namespace Grid
 				contentView.RecursiveEnumerateSubviewsUsingBlock(
 				delegate(UIView view,out bool stop)
 				{
+					stop = false;
 					if (view.RespondsToSelector(sel))
 					{
 						view.PerformSelector(sel,isHigh,0);
