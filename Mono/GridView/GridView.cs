@@ -203,6 +203,8 @@ namespace Grid
 			longPressGesture.NumberOfTouchesRequired = 1;				
 			longPressGesture.Delegate = recog;
 			longPressGesture.CancelsTouchesInView = false;
+			longPressGesture.DelaysTouchesBegan = true;
+			longPressGesture.DelaysTouchesEnded = true;
 			AddGestureRecognizer(longPressGesture);
 
 			////////////////////////
