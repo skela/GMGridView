@@ -312,6 +312,7 @@ namespace Grid
 			{
 				highlighted = value;
 
+				/*
 				Selector sel = new Selector("setHighlighted:");
 				NSNumber isHigh = NSNumber.FromBoolean(highlighted);
 				contentView.RecursiveEnumerateSubviewsUsingBlock(
@@ -323,7 +324,7 @@ namespace Grid
 						view.PerformSelector(sel,isHigh,0);
 						//((UIControl)view).Highlighted = highlighted;
 					}
-				});
+				});*/
 			}
 		}
 
