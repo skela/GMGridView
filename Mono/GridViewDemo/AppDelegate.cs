@@ -10,7 +10,7 @@ namespace GridViewDemo
 	// The UIApplicationDelegate for the application. This class is responsible for launching the 
 	// User Interface of the application, as well as listening (and optionally responding) to 
 	// application events from iOS.
-	[Register ("AppDelegate")]
+	[Register ("GridDemoAppDelegate")]
 	public partial class AppDelegate : UIApplicationDelegate
 	{
 		// class-level declarations
