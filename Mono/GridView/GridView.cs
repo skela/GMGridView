@@ -565,6 +565,9 @@ namespace Grid
 			{
 				bool valueChanged = !CGPointEqualToPoint(value,ContentOffset);
 
+				if (float.IsNaN (value.Y))
+					value.Y = 0;
+
 				base.ContentOffset = value;
 
 				if (valueChanged) 
