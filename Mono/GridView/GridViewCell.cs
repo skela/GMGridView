@@ -418,8 +418,8 @@ namespace Grid
 		
 		public void StepToFullsizeWithAlpha(float alpha)
 		{
-			return; // not supported anymore - to be fixed
-			
+			// not supported anymore - to be fixed
+			/*
 			if (!IsInFullSizeMode)
 			{
 				alpha = (float) Math.Max(0, alpha);
@@ -427,7 +427,7 @@ namespace Grid
 				
 				fullSizeView.Alpha = alpha;
 				contentView.Alpha  = 1.4f - alpha;
-			}
+			}*/
 		}
 
 		#endregion

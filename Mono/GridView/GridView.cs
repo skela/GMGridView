@@ -131,7 +131,6 @@ namespace Grid
 		bool editing;
 		int itemSpacing;
 		GridViewStyle style;
-		double minimumPressDuration;
 		bool showFullSizeViewWithAlphaWhenTransforming;
 		UIEdgeInsets minEdgeInsets;
 		int sortFuturePosition;
@@ -234,7 +233,7 @@ namespace Grid
 			editing = false;
 			itemSpacing = 10;
 			style = GridViewStyle.Swap;
-			minimumPressDuration = 0.2;
+			MinimumPressDuration = 0.2;
 			showFullSizeViewWithAlphaWhenTransforming = true;
 			minEdgeInsets = new UIEdgeInsets(5, 5, 5, 5);
 			ClipsToBounds = false;
@@ -585,7 +584,7 @@ namespace Grid
 
 		#region UIGestureRegocnizer Delegate
 
-		bool enableEditOnLongPress;
+		bool enableEditOnLongPress = false;
 
 		public bool ShouldBegin (UIGestureRecognizer gestureRecognizer)
 		{
@@ -988,7 +987,7 @@ namespace Grid
 
 		#region TapGesture
 
-		bool disableEditOnEmptySpaceTap;
+		bool disableEditOnEmptySpaceTap=false;
 
 		[Export("tapGestureUpdated:")]
 		public void TapGestureUpdated(UITapGestureRecognizer tapGesture_)
